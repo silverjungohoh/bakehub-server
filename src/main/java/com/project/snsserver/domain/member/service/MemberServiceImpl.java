@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.snsserver.global.error.type.MemberErrorCode.DUPLICATED_EMAIL;
+import static com.project.snsserver.global.error.type.MemberErrorCode.DUPLICATED_NICKNAME;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,15 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberException(DUPLICATED_EMAIL);
         }
         return getMessage("사용 가능한 이메일입니다.");
+    }
+
+    @Override
+    public Map<String, String> checkNicknameDuplicate(String nickname) {
+
+        if(memberRepository.existsByNickname(nickname)) {
+            throw new MemberException(DUPLICATED_NICKNAME);
+        }
+        return getMessage("사용 가능한 닉네임입니다.");
     }
 
     private static Map<String, String> getMessage(String message) {

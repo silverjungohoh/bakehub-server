@@ -28,4 +28,14 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 닉네임 중복 확인
+     */
+    @Operation(summary = "닉네임 중복 확인")
+    @GetMapping("/duplicate/nickname/{nickname}")
+    public ResponseEntity<Map<String, String>> checkNicknameDuplicate(@PathVariable String nickname) {
+
+        Map<String, String> response = memberService.checkNicknameDuplicate(nickname);
+        return ResponseEntity.ok(response);
+    }
 }

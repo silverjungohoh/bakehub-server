@@ -9,4 +9,8 @@ public interface MemberService {
      */
     Map<String, String> checkEmailDuplicate(String email);
 
+    /**
+     * 닉네임 중복 확인
+     */
+    Map<String, String> checkNicknameDuplicate(String nickname);
 }
