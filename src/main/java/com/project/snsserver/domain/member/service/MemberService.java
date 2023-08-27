@@ -1,5 +1,7 @@
 package com.project.snsserver.domain.member.service;
 
+import com.project.snsserver.domain.member.model.dto.VerifyAuthCodeRequest;
+
 import java.util.Map;
 
 public interface MemberService {
@@ -18,4 +20,9 @@ public interface MemberService {
      * 이메일 인증번호 전송
      */
     Map<String, String> sendEmailAuthCode(String email);
+
+    /**
+     * 이메일 인증번호 확인
+     */
+    Map<String, String> verifyEmailAuthCode(VerifyAuthCodeRequest request);
 }

@@ -2,6 +2,7 @@ package com.project.snsserver.domain.member.service;
 
 import com.project.snsserver.domain.mail.model.MailMessage;
 import com.project.snsserver.domain.mail.service.MailService;
+import com.project.snsserver.domain.member.model.dto.VerifyAuthCodeRequest;
 import com.project.snsserver.domain.member.model.entity.MemberAuthCode;
 import com.project.snsserver.domain.member.repository.MemberRepository;
 import com.project.snsserver.domain.member.repository.redis.MemberAuthCodeRepository;
@@ -12,9 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import static com.project.snsserver.global.error.type.MemberErrorCode.DUPLICATED_EMAIL;
-import static com.project.snsserver.global.error.type.MemberErrorCode.DUPLICATED_NICKNAME;
+import static com.project.snsserver.global.error.type.MemberErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +67,19 @@ public class MemberServiceImpl implements MemberService {
 
         memberAuthCodeRepository.save(code);
         return getMessage("메일 인증번호를 전송하였습니다.");
+    }
+
+    @Override
+    public Map<String, String> verifyEmailAuthCode(VerifyAuthCodeRequest request) {
+
+        MemberAuthCode authCode = memberAuthCodeRepository.findById(request.getCode())
+                .orElseThrow(() -> new MemberException(INCORRECT_EMAIL_AUTH_CODE));
+
+       if(!Objects.equals(request.getEmail(), authCode.getEmail())) {
+           throw new MemberException(INCORRECT_EMAIL_AUTH_CODE);
+       }
+
+        return getMessage("메일 인증에 성공하였습니다.");
     }
 
 
