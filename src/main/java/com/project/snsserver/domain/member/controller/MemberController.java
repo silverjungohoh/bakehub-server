@@ -1,5 +1,6 @@
 package com.project.snsserver.domain.member.controller;
 
+import com.project.snsserver.domain.member.model.dto.SendAuthCodeRequest;
 import com.project.snsserver.domain.member.model.dto.VerifyAuthCodeRequest;
 import com.project.snsserver.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,9 +46,9 @@ public class MemberController {
      */
     @Operation(summary = "이메일 인증번호 발송")
     @PostMapping("/send/email")
-    public ResponseEntity<Map<String, String>> sendEmailAuthCode(@RequestBody Map<String, String> data) {
+    public ResponseEntity<Map<String, String>> sendEmailAuthCode(@RequestBody SendAuthCodeRequest request) {
 
-        Map<String, String> response = memberService.sendEmailAuthCode(data.get("email"));
+        Map<String, String> response = memberService.sendEmailAuthCode(request.getEmail());
         return ResponseEntity.ok(response);
     }
 
