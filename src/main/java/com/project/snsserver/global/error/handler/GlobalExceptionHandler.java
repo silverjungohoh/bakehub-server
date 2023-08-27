@@ -1,5 +1,6 @@
 package com.project.snsserver.global.error.handler;
 
+import com.project.snsserver.global.error.exception.ImageException;
 import com.project.snsserver.global.error.exception.MemberException;
 import com.project.snsserver.global.error.model.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,17 @@ public class GlobalExceptionHandler {
                 .status(e.getErrorCode().getStatus().value())
                 .code(e.getErrorCode().getCode())
                 .message(e.getErrorCode().getMessage())
+                .build();
+
+        return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
+    }
+
+    @ExceptionHandler(ImageException.class)
+    public ResponseEntity<ErrorResponse> handleImageException(ImageException e) {
+
+        ErrorResponse response = ErrorResponse.builder()
+                .status(e.getErrorCode().getStatus().value())
+                .message(e.getMessage())
                 .build();
 
         return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
