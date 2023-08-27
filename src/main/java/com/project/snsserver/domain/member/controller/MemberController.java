@@ -38,4 +38,15 @@ public class MemberController {
         Map<String, String> response = memberService.checkNicknameDuplicate(nickname);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 이메일 인증번호 발송
+     */
+    @Operation(summary = "이메일 인증번호 발송")
+    @PostMapping("/send/email")
+    public ResponseEntity<Map<String, String>> sendEmailAuthCode(@RequestBody Map<String, String> data) {
+
+        Map<String, String> response = memberService.sendEmailAuthCode(data.get("email"));
+        return ResponseEntity.ok(response);
+    }
 }
