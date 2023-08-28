@@ -7,11 +7,11 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ErrorResponse {
+public class ErrorResponse<T> {
 
     private int status;
 
     private String code;
 
-    private String message;
+    private T message;
 }
