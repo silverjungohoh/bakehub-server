@@ -69,7 +69,8 @@ public class MemberServiceImpl implements MemberService {
                 .message("인증 코드 : " + authCode)
                 .build();
 
-        mailService.sendMail(mail, authCode);
+        boolean result = mailService.sendMail(mail, authCode);
+        if(!result) throw new MemberException(FAIL_TO_SEND_EMAIL);
 
         MemberAuthCode code = MemberAuthCode.builder()
                 .id(authCode)
@@ -98,7 +99,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public SignUpResponse signUp(MultipartFile file, SignUpRequest request) {
 
-        if(!Objects.equals(request.getPasswordCheck(), request.getPassword())) {
+        if (!Objects.equals(request.getPasswordCheck(), request.getPassword())) {
             throw new MemberException(INCORRECT_PASSWORD_CHECK);
         }
 

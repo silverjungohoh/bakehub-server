@@ -7,5 +7,5 @@ public interface MailService {
     /**
      * 이메일 전송
      */
-    void sendMail(MailMessage mail, String code);
+    boolean sendMail(MailMessage mail, String code);
 }

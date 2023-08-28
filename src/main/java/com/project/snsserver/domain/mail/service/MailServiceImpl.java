@@ -1,18 +1,16 @@
 package com.project.snsserver.domain.mail.service;
 
 import com.project.snsserver.domain.mail.model.MailMessage;
-import com.project.snsserver.global.error.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-
-import static com.project.snsserver.global.error.type.MemberErrorCode.FAIL_TO_SEND_EMAIL;
 
 @Slf4j
 @Service
@@ -28,18 +26,19 @@ public class MailServiceImpl implements MailService {
 
 
     @Override
-    public void sendMail(MailMessage mail, String code) {
+    public boolean sendMail(MailMessage mail, String code) {
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
 
             createMailForm(mail, message);
             javaMailSender.send(message);
 
-        } catch (MessagingException e) {
+        } catch (MessagingException | MailException e) {
             log.error("Fail to send email {}", e.getMessage());
-            throw new MemberException(FAIL_TO_SEND_EMAIL);
+            return false;
         }
         log.info("Success to send email");
+        return true;
     }
 
     /**
