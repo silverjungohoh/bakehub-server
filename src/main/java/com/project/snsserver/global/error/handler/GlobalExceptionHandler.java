@@ -9,11 +9,13 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.snsserver.global.error.type.ErrorCode.INVALID_ARGUMENT;
+import static com.project.snsserver.global.error.type.ImageErrorCode.EXCEEDED_IMAGE_SIZE_LIMIT;
 
 @Slf4j
 @RestControllerAdvice
@@ -59,4 +61,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(INVALID_ARGUMENT.getStatus()).body(response);
     }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse<String>> handleMaxUploadSizeExceededException() {
+
+        ErrorResponse<String> response = ErrorResponse.<String>builder()
+                .status(EXCEEDED_IMAGE_SIZE_LIMIT.getStatus().value())
+                .code(EXCEEDED_IMAGE_SIZE_LIMIT.getCode())
+                .message(EXCEEDED_IMAGE_SIZE_LIMIT.getMessage())
+                .build();
+
+        return ResponseEntity.status(EXCEEDED_IMAGE_SIZE_LIMIT.getStatus()).body(response);
+    }
+
 }
