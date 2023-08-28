@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MemberException.class)
-    public ResponseEntity<ErrorResponse> handleMemberException(MemberException e) {
-        log.error("Error occurs {}", e.getMessage());
+    public ResponseEntity<ErrorResponse<String>> handleMemberException(MemberException e) {
 
-        ErrorResponse response = ErrorResponse.builder()
+        ErrorResponse<String> response = ErrorResponse.<String>builder()
                 .status(e.getErrorCode().getStatus().value())
                 .code(e.getErrorCode().getCode())
                 .message(e.getErrorCode().getMessage())
@@ -26,11 +25,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ImageException.class)
-    public ResponseEntity<ErrorResponse> handleImageException(ImageException e) {
+    public ResponseEntity<ErrorResponse<String>> handleImageException(ImageException e) {
 
-        ErrorResponse response = ErrorResponse.builder()
+        ErrorResponse<String> response = ErrorResponse.<String>builder()
                 .status(e.getErrorCode().getStatus().value())
-                .message(e.getMessage())
+                .code(e.getErrorCode().getCode())
+                .message(e.getErrorCode().getMessage())
                 .build();
 
         return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
