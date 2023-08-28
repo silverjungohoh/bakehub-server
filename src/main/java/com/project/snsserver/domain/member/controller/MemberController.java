@@ -1,14 +1,19 @@
 package com.project.snsserver.domain.member.controller;
 
 import com.project.snsserver.domain.member.model.dto.SendAuthCodeRequest;
+import com.project.snsserver.domain.member.model.dto.SignUpRequest;
+import com.project.snsserver.domain.member.model.dto.SignUpResponse;
 import com.project.snsserver.domain.member.model.dto.VerifyAuthCodeRequest;
 import com.project.snsserver.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
@@ -61,5 +66,17 @@ public class MemberController {
 
         Map<String, String> response = memberService.verifyEmailAuthCode(request);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 가입
+     */
+    @Operation(summary = "회원 가입")
+    @PostMapping("/sign-up")
+    public ResponseEntity<SignUpResponse> signUp (@RequestPart(value = "image") MultipartFile file,
+                                                  @RequestPart(value = "data") @Valid SignUpRequest request) {
+
+        SignUpResponse response = memberService.signUp(file, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

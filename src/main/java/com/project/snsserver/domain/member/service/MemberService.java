@@ -1,6 +1,9 @@
 package com.project.snsserver.domain.member.service;
 
+import com.project.snsserver.domain.member.model.dto.SignUpRequest;
+import com.project.snsserver.domain.member.model.dto.SignUpResponse;
 import com.project.snsserver.domain.member.model.dto.VerifyAuthCodeRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -25,4 +28,9 @@ public interface MemberService {
      * 이메일 인증번호 확인
      */
     Map<String, String> verifyEmailAuthCode(VerifyAuthCodeRequest request);
+
+    /**
+     * 회원 가입
+     */
+    SignUpResponse signUp(MultipartFile file, SignUpRequest request);
 }
