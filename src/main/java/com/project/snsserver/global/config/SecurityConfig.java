@@ -1,5 +1,6 @@
 package com.project.snsserver.global.config;
 
+import com.project.snsserver.domain.security.handler.CustomAuthenticationEntryPoint;
 import com.project.snsserver.domain.security.jwt.JwtAuthenticationFilter;
 import com.project.snsserver.domain.security.jwt.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsUtils;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -54,7 +56,10 @@ public class SecurityConfig {
                         "/api/v1/members/duplicate/**").permitAll()
                 .anyRequest().authenticated();
 
-        http
+        http.exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+
+                .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
 
