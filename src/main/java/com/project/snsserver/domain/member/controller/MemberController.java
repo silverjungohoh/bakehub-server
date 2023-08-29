@@ -1,9 +1,6 @@
 package com.project.snsserver.domain.member.controller;
 
-import com.project.snsserver.domain.member.model.dto.SendAuthCodeRequest;
-import com.project.snsserver.domain.member.model.dto.SignUpRequest;
-import com.project.snsserver.domain.member.model.dto.SignUpResponse;
-import com.project.snsserver.domain.member.model.dto.VerifyAuthCodeRequest;
+import com.project.snsserver.domain.member.model.dto.*;
 import com.project.snsserver.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,5 +75,16 @@ public class MemberController {
 
         SignUpResponse response = memberService.signUp(file, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * 회원 로그인
+     */
+    @Operation(summary = "회원 로그인")
+    @PostMapping("/auth/login")
+    public ResponseEntity<LoginResponse> login (@RequestBody @Valid LoginRequest request) {
+
+        LoginResponse response = memberService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

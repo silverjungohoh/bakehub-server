@@ -3,18 +3,22 @@ package com.project.snsserver.domain.member.service;
 import com.project.snsserver.domain.awss3.service.AwsS3Service;
 import com.project.snsserver.domain.mail.model.MailMessage;
 import com.project.snsserver.domain.mail.service.MailService;
-import com.project.snsserver.domain.member.model.dto.SignUpRequest;
-import com.project.snsserver.domain.member.model.dto.SignUpResponse;
-import com.project.snsserver.domain.member.model.dto.VerifyAuthCodeRequest;
+import com.project.snsserver.domain.member.model.dto.*;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.model.entity.MemberAuthCode;
 import com.project.snsserver.domain.member.repository.jpa.MemberRepository;
 import com.project.snsserver.domain.member.repository.redis.MemberAuthCodeRepository;
 import com.project.snsserver.domain.member.type.MemberRole;
 import com.project.snsserver.domain.member.type.MemberStatus;
+import com.project.snsserver.domain.security.CustomUserDetails;
+import com.project.snsserver.domain.security.jwt.JwtTokenProvider;
 import com.project.snsserver.global.error.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +42,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberAuthCodeRepository memberAuthCodeRepository;
     private final AwsS3Service awsS3Service;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     @Override
@@ -117,6 +123,29 @@ public class MemberServiceImpl implements MemberService {
 
         memberRepository.save(member);
         return SignUpResponse.fromEntity(member);
+    }
+    @Override
+    public LoginResponse login(LoginRequest request) {
+
+        // UsernamePasswordAuthenticationToken 객체 생성
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+
+        // authenticate 메서드가 실행이 될 때 loadUserByUsername 메서드가 실행
+        // 성공 시 사용자 정보가 담긴 Authentication 객체를 생성하여 반환
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        // SecurityContext에 Authentication 객체를 저장
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String accessToken = jwtTokenProvider.generateAccessToken(userDetails.getUsername(), userDetails.getRole().name());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getUsername());
+
+        return LoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
 
