@@ -1,5 +1,7 @@
 package com.project.snsserver.domain.security.jwt;
 
+import com.project.snsserver.domain.member.model.entity.RefreshToken;
+import com.project.snsserver.domain.member.repository.redis.RefreshTokenRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -25,6 +27,8 @@ public class JwtTokenProvider {
 
     @Value("${spring.jwt.valid.refreshToken}")
     private Long refreshTokenValid;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
     private Key getKey() {
@@ -68,6 +72,22 @@ public class JwtTokenProvider {
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
 
-        return generateToken(claims, refreshTokenValid);
+        String refreshToken = generateToken(claims, refreshTokenValid);
+        saveRefreshToken(email, refreshToken);
+        return refreshToken;
+    }
+
+    /**
+     * refresh token redis 저장
+     */
+    public void saveRefreshToken(String email, String token) {
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .id(email)
+                .refreshToken(token)
+                .expiredAt(refreshTokenValid)
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
     }
 }
