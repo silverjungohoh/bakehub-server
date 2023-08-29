@@ -19,5 +19,5 @@ public class RefreshToken {
     private String refreshToken;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
-    private Long expiredAt;
+    private Long expiration;
 }

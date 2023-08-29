@@ -100,7 +100,7 @@ public class JwtTokenProvider {
         RefreshToken refreshToken = RefreshToken.builder()
                 .id(email)
                 .refreshToken(token)
-                .expiredAt(refreshTokenValid)
+                .expiration(refreshTokenValid)
                 .build();
 
         refreshTokenRepository.save(refreshToken);

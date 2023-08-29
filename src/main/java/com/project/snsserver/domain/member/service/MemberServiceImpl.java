@@ -84,7 +84,7 @@ public class MemberServiceImpl implements MemberService {
         MemberAuthCode code = MemberAuthCode.builder()
                 .id(authCode)
                 .email(email)
-                .expiredAt(1000L * 60 * 3)
+                .expiration(1000L * 60 * 3)
                 .build();
 
         memberAuthCodeRepository.save(code);

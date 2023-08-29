@@ -19,5 +19,5 @@ public class MemberAuthCode {
     private String email;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
-    private Long expiredAt;
+    private Long expiration;
 }
