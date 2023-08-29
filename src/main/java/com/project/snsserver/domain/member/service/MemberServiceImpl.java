@@ -6,8 +6,10 @@ import com.project.snsserver.domain.mail.service.MailService;
 import com.project.snsserver.domain.member.model.dto.*;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.model.entity.MemberAuthCode;
+import com.project.snsserver.domain.member.model.entity.RefreshToken;
 import com.project.snsserver.domain.member.repository.jpa.MemberRepository;
 import com.project.snsserver.domain.member.repository.redis.MemberAuthCodeRepository;
+import com.project.snsserver.domain.member.repository.redis.RefreshTokenRepository;
 import com.project.snsserver.domain.member.type.MemberRole;
 import com.project.snsserver.domain.member.type.MemberStatus;
 import com.project.snsserver.domain.security.CustomUserDetails;
@@ -44,6 +46,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
     @Override
@@ -145,6 +148,34 @@ public class MemberServiceImpl implements MemberService {
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .build();
+    }
+
+    @Override
+    public ReissueTokenResponse reissueAccessToken(ReissueTokenRequest request) {
+        String token = request.getRefreshToken();
+
+        // refresh token 유효성 확인
+        if(!jwtTokenProvider.validateRefreshToken(token)) {
+            throw new MemberException(INVALID_REFRESH_TOKEN);
+        }
+
+        String email = jwtTokenProvider.extractUsername(token);
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        RefreshToken refreshToken = refreshTokenRepository.findById(email)
+                .orElseThrow(() -> new MemberException(INVALID_REFRESH_TOKEN));
+
+        if(!Objects.equals(refreshToken.getRefreshToken(), token)) {
+            throw new MemberException(INVALID_REFRESH_TOKEN);
+        }
+
+        String accessToken = jwtTokenProvider.generateAccessToken(email, member.getRole().name());
+
+        return ReissueTokenResponse.builder()
+                .accessToken(accessToken)
                 .build();
     }
 

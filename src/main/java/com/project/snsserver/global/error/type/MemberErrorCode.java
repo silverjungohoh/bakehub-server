@@ -19,8 +19,8 @@ public enum MemberErrorCode {
     INCORRECT_PASSWORD_CHECK(HttpStatus.BAD_REQUEST, "E105", "비밀번호와 동일하지 않습니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "E106", "존재하지 않는 회원입니다."),
     FAIL_TO_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "E107", "사용자 인증에 실패하였습니다."),
-    FAIL_TO_AUTHORIZATION(HttpStatus.FORBIDDEN, "E108", "사용자 권한이 없습니다.");
-
+    FAIL_TO_AUTHORIZATION(HttpStatus.FORBIDDEN, "E108", "사용자 권한이 없습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "E109", "refresh token이 유효하지 않습니다.");
     private final HttpStatus status;
     private final String code;
     private final String message;

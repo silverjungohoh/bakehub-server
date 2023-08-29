@@ -124,6 +124,17 @@ public class JwtTokenProvider {
         return !extractClaims(token).getExpiration().before(new Date());
     }
 
+    /**
+     * refresh token 유효성 검증
+     */
+    public boolean validateRefreshToken(String token) {
+        try {
+            return !extractClaims(token).getExpiration().before(new Date());
+        } catch (CustomJwtException e) {
+            return false;
+        }
+    }
+
     public Claims extractClaims(String token) {
         try {
             return Jwts.parserBuilder()

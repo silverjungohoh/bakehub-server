@@ -87,4 +87,15 @@ public class MemberController {
         LoginResponse response = memberService.login(request);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * access token 재발급
+     */
+    @Operation(summary = "회원 access token 재발급")
+    @PostMapping("/auth/token")
+    public ResponseEntity<ReissueTokenResponse> reissueAccessToken(@RequestBody ReissueTokenRequest request) {
+
+        ReissueTokenResponse response = memberService.reissueAccessToken(request);
+        return ResponseEntity.ok(response);
+    }
 }

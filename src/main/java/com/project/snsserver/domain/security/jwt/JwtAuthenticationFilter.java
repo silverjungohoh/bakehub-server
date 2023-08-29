@@ -26,7 +26,7 @@ import java.util.Objects;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String[] EXCLUDED_URL
-            = {"/api/v1/members/sign-up", "/api/v1/members/auth/login",
+            = {"/api/v1/members/sign-up", "/api/v1/members/auth/login", "/api/v1/members/auth/token",
             "/api/v1/members/duplicate/email", "/api/v1/members/duplicate/nickname",
             "/h2-console", "/swagger-ui", "/api-docs"};
 
