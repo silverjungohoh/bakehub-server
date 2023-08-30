@@ -1,5 +1,6 @@
 package com.project.snsserver.global.error.handler;
 
+import com.project.snsserver.global.error.exception.BoardException;
 import com.project.snsserver.global.error.exception.ImageException;
 import com.project.snsserver.global.error.exception.MemberException;
 import com.project.snsserver.global.error.model.ErrorResponse;
@@ -74,4 +75,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(EXCEEDED_IMAGE_SIZE_LIMIT.getStatus()).body(response);
     }
 
+    @ExceptionHandler(BoardException.class)
+    public ResponseEntity<ErrorResponse<String>> handleBoardException(BoardException e) {
+
+        ErrorResponse<String> response = ErrorResponse.<String>builder()
+                .status(e.getErrorCode().getStatus().value())
+                .code(e.getErrorCode().getCode())
+                .message(e.getErrorCode().getMessage())
+                .build();
+
+        return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
+    }
 }
