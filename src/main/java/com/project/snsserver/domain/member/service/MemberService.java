@@ -41,4 +41,9 @@ public interface MemberService {
      * access token 재발급
      */
     ReissueTokenResponse reissueAccessToken(ReissueTokenRequest request);
+
+    /**
+     * 회원 로그아웃
+     */
+    Map<String, String> logout(LogoutRequest request, String email);
 }

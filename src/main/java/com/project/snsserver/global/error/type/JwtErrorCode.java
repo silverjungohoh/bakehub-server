@@ -18,7 +18,9 @@ public enum JwtErrorCode {
 
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "E303", "지원되지 않는 token 입니다."),
 
-    INCORRECT_TOKEN(HttpStatus.UNAUTHORIZED, "E304", "잘못된 token 입니다.");
+    INCORRECT_TOKEN(HttpStatus.UNAUTHORIZED, "E304", "잘못된 token 입니다."),
+
+    ALREADY_LOGOUT_TOKEN(HttpStatus.UNAUTHORIZED, "E305", "이미 로그아웃한 회원입니다.");
 
     private final HttpStatus status;
     private final String code;

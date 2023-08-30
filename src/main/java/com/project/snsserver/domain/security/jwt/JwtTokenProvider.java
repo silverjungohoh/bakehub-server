@@ -1,10 +1,12 @@
 package com.project.snsserver.domain.security.jwt;
 
 import com.project.snsserver.domain.member.model.entity.RefreshToken;
+import com.project.snsserver.domain.member.repository.redis.LogoutAccessTokenRepository;
 import com.project.snsserver.domain.member.repository.redis.RefreshTokenRepository;
 import com.project.snsserver.domain.security.service.CustomUserDetailsService;
 import com.project.snsserver.global.error.exception.CustomJwtException;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,10 +45,11 @@ public class JwtTokenProvider {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final CustomUserDetailsService userDetailsService;
+    private final LogoutAccessTokenRepository logoutAccessTokenRepository;
 
 
     private Key getKey() {
-        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -135,8 +137,21 @@ public class JwtTokenProvider {
         }
     }
 
+    /**
+     * token 유효 시간 계산
+     */
+    public Long getRemainingTime(String token) {
+        Date expiredAt = extractClaims(token).getExpiration();
+        Date now = new Date();
+        return now.getTime() - expiredAt.getTime();
+    }
+
     public Claims extractClaims(String token) {
         try {
+            if(logoutAccessTokenRepository.existsById(token)) {
+                log.error("already logout");
+                throw new CustomJwtException(ALREADY_LOGOUT_TOKEN);
+            }
             return Jwts.parserBuilder()
                     .setSigningKey(getKey())
                     .build()

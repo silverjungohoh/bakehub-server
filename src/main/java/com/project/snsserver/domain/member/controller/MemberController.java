@@ -2,11 +2,13 @@ package com.project.snsserver.domain.member.controller;
 
 import com.project.snsserver.domain.member.model.dto.*;
 import com.project.snsserver.domain.member.service.MemberService;
+import com.project.snsserver.domain.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -96,6 +98,18 @@ public class MemberController {
     public ResponseEntity<ReissueTokenResponse> reissueAccessToken(@RequestBody ReissueTokenRequest request) {
 
         ReissueTokenResponse response = memberService.reissueAccessToken(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 로그아웃
+     */
+    @Operation(summary = "회원 로그아웃")
+    @PostMapping("/auth/logout")
+    public ResponseEntity<Map<String, String>> logout(@RequestBody LogoutRequest request,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = memberService.logout(request, userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
 }

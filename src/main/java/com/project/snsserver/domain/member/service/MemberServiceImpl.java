@@ -4,10 +4,12 @@ import com.project.snsserver.domain.awss3.service.AwsS3Service;
 import com.project.snsserver.domain.mail.model.MailMessage;
 import com.project.snsserver.domain.mail.service.MailService;
 import com.project.snsserver.domain.member.model.dto.*;
+import com.project.snsserver.domain.member.model.entity.LogoutAccessToken;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.model.entity.MemberAuthCode;
 import com.project.snsserver.domain.member.model.entity.RefreshToken;
 import com.project.snsserver.domain.member.repository.jpa.MemberRepository;
+import com.project.snsserver.domain.member.repository.redis.LogoutAccessTokenRepository;
 import com.project.snsserver.domain.member.repository.redis.MemberAuthCodeRepository;
 import com.project.snsserver.domain.member.repository.redis.RefreshTokenRepository;
 import com.project.snsserver.domain.member.type.MemberRole;
@@ -47,6 +49,7 @@ public class MemberServiceImpl implements MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final LogoutAccessTokenRepository logoutAccessTokenRepository;
 
 
     @Override
@@ -68,6 +71,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Map<String, String> sendEmailAuthCode(String email) {
 
         String authCode = RandomStringUtils.randomAlphanumeric(12);
@@ -128,6 +132,7 @@ public class MemberServiceImpl implements MemberService {
         return SignUpResponse.fromEntity(member);
     }
     @Override
+    @Transactional
     public LoginResponse login(LoginRequest request) {
 
         // UsernamePasswordAuthenticationToken 객체 생성
@@ -177,6 +182,27 @@ public class MemberServiceImpl implements MemberService {
         return ReissueTokenResponse.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public Map<String, String> logout(LogoutRequest request, String email) {
+
+        String accessToken = request.getAccessToken();
+        Long remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
+
+        LogoutAccessToken logoutAccessToken = LogoutAccessToken.builder()
+                .id(accessToken)
+                .email(email)
+                .expiration(remainingTime)
+                .build();
+
+        logoutAccessTokenRepository.save(logoutAccessToken);
+
+        // redis refresh token 삭제
+        refreshTokenRepository.deleteById(email);
+
+        return getMessage("로그아웃에 성공하였습니다.");
     }
 
 
