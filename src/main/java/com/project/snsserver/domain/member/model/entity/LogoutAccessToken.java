@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 @Getter
 @Builder
-@RedisHash("AuthCode")
-public class MemberAuthCode {
+@RedisHash("LogoutAccessToken")
+public class LogoutAccessToken {
 
     @Id
-    private String id; // auth code
+    private String id; // access token
 
     private String email;
 

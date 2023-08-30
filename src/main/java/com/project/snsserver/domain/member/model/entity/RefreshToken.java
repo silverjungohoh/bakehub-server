@@ -10,13 +10,13 @@ import java.util.concurrent.TimeUnit;
 
 @Getter
 @Builder
-@RedisHash("AuthCode")
-public class MemberAuthCode {
+@RedisHash("RefreshToken")
+public class RefreshToken {
 
     @Id
-    private String id; // auth code
+    private String id; // email
 
-    private String email;
+    private String refreshToken;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long expiration;

@@ -3,6 +3,7 @@ package com.project.snsserver.domain.member.model.entity;
 import com.project.snsserver.domain.member.type.Gender;
 import com.project.snsserver.domain.member.type.MemberRole;
 import com.project.snsserver.domain.member.type.MemberStatus;
+import com.project.snsserver.global.entity.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @Column(name = "member_id")
