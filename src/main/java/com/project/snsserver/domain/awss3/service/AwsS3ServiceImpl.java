@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.awss3.service;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.project.snsserver.global.error.type.ImageErrorCode.FAIL_TO_DELETE_IMAGE;
 
 @Slf4j
 @Service
@@ -75,7 +78,13 @@ public class AwsS3ServiceImpl implements AwsS3Service {
      */
     @Override
     public void deleteFile(String imgUrl, String dir) {
-        amazonS3.deleteObject(bucket, dir + "/" + imgUrl.substring(imgUrl.lastIndexOf("/") + 1));
+        try {
+            amazonS3.deleteObject(bucket, dir + "/" + imgUrl.substring(imgUrl.lastIndexOf("/") + 1));
+        } catch (SdkClientException e) {
+            log.error(e.getMessage());
+            throw new ImageException(FAIL_TO_DELETE_IMAGE);
+        }
+        log.info("image delete success");
     }
 
     /**
