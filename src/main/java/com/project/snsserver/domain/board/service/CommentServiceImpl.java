@@ -61,6 +61,25 @@ public class CommentServiceImpl implements CommentService{
         return getMessage("댓글이 삭제되었습니다.");
     }
 
+    @Override
+    @Transactional
+    public EditCommentResponse updateComment(Long postId, Long commentId, EditCommentRequest request, Member member) {
+
+        if(!postRepository.existsById(postId)) {
+            throw new BoardException(POST_NOT_FOUND);
+        }
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BoardException(COMMENT_NOT_FOUND));
+
+        if(!Objects.equals(member.getEmail(), comment.getMember().getEmail())) {
+            throw new BoardException(FAIL_TO_UPDATE_COMMENT);
+        }
+
+        comment.update(request.getContent());
+        return EditCommentResponse.fromEntity(comment);
+    }
+
     private static Map<String, String> getMessage(String message) {
         Map<String, String> result = new HashMap<>();
         result.put("result", message);

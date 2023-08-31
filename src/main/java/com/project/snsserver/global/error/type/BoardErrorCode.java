@@ -18,7 +18,8 @@ public enum BoardErrorCode {
     FAIL_TO_DELETE_POST(HttpStatus.UNAUTHORIZED, "E404", "게시물 삭제 권한은 작성자에게 있습니다."),
     POST_IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "E405", "존재하지 않는 이미지입니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "E406", "존재하지 않는 댓글입니다."),
-    FAIL_TO_DELETE_COMMENT(HttpStatus.UNAUTHORIZED, "E407", "댓글 삭제 권한은 작성자에게 있습니다.");
+    FAIL_TO_DELETE_COMMENT(HttpStatus.UNAUTHORIZED, "E407", "댓글 삭제 권한은 작성자에게 있습니다."),
+    FAIL_TO_UPDATE_COMMENT(HttpStatus.UNAUTHORIZED, "E408", "댓글 수정 권한은 작성자에게 있습니다.");
 
     private final HttpStatus status;
     private final String code;

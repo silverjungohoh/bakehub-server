@@ -14,7 +14,12 @@ public interface CommentService {
     EditCommentResponse writeComment(Long postId, EditCommentRequest request, Member member);
 
     /**
-     * 댓글 작성
+     * 댓글 삭제
      */
     Map<String, String> deleteComment(Long postId, Long commentId, Member member);
+
+    /**
+     * 댓글 수정
+     */
+    EditCommentResponse updateComment(Long postId, Long commentId, EditCommentRequest request, Member member);
 }

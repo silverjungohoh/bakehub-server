@@ -39,11 +39,25 @@ public class CommentController {
     /**
      * 댓글 삭제
      */
+    @Operation(summary = "댓글 삭제")
     @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,
                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Map<String, String> response = commentService.deleteComment(postId, commentId, userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 댓글 수정
+     */
+    @Operation(summary = "댓글 수정")
+    @PatchMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<EditCommentResponse> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                                             @RequestBody @Valid EditCommentRequest request,
+                                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        EditCommentResponse response = commentService.updateComment(postId, commentId, request, userDetails.getMember());
         return ResponseEntity.ok(response);
     }
 }
