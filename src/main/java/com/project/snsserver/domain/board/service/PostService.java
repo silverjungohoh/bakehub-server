@@ -30,4 +30,9 @@ public interface PostService {
      * 게시물 수정 시 이미지 등록
      */
     PostImageResponse addPostImage(Long postId, MultipartFile file);
+
+    /**
+     * 게시물 수정 시 이미지 삭제
+     */
+    Map<String, String> deletePostImage(Long postId, Long postImageId);
 }

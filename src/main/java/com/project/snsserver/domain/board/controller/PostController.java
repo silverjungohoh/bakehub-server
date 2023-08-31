@@ -21,7 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
-@Tag(name = "게시판", description = "게시판 API Document")
+@Tag(name = "게시판", description = "게시판 API Document - 게시물")
 public class PostController {
 
     private final PostService postService;
@@ -75,4 +75,15 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 이미지 삭제
+     */
+    @Operation(summary = "이미지 삭제")
+    @DeleteMapping("/{postId}/images/{postImageId}")
+    public ResponseEntity<Map<String, String>> deletePostImage(@PathVariable Long postId,
+                                                               @PathVariable Long postImageId) {
+
+        Map<String, String> response = postService.deletePostImage(postId, postImageId);
+        return ResponseEntity.ok(response);
+    }
 }
