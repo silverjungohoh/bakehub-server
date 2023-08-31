@@ -151,7 +151,7 @@ class MemberServiceTest {
         MemberAuthCode authCode = MemberAuthCode.builder()
                 .email(request.getEmail())
                 .id(request.getCode())
-                .expiredAt(100L)
+                .expiration(100L)
                 .build();
 
         // given
@@ -191,7 +191,7 @@ class MemberServiceTest {
         MemberAuthCode authCode = MemberAuthCode.builder()
                 .email("test123@test.com")
                 .id(request.getCode())
-                .expiredAt(100L)
+                .expiration(100L)
                 .build();
 
         // given
