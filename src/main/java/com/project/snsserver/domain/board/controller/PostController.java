@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -47,6 +48,17 @@ public class PostController {
                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         EditPostResponse response = postService.updatePost(postId, request, userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 글 삭제
+     */
+    @Operation(summary = "글 삭제")
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Map<String, String>> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = postService.deletePost(postId, userDetails.getMember());
         return ResponseEntity.ok(response);
     }
 }

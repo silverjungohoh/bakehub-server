@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.project.snsserver.global.error.type.BoardErrorCode.*;
@@ -86,5 +84,31 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
 
         return EditPostResponse.fromEntity(post, postImgResponse);
+    }
+
+    @Override
+    @Transactional
+    public Map<String, String> deletePost(Long postId, Member member) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        if(!Objects.equals(post.getMember().getEmail(), member.getEmail())) {
+            throw new BoardException(FAIL_TO_DELETE_POST);
+        }
+
+        List<PostImage> postImages = postImageRepository.findAllByPost(post);
+        if(!postImages.isEmpty()) {
+            postImages.forEach((postImage -> awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR)));
+        }
+
+        postRepository.delete(post);
+        return getMessage("게시물이 삭제되었습니다.");
+    }
+
+    private static Map<String, String> getMessage(String message) {
+        Map<String, String> result = new HashMap<>();
+        result.put("result", message);
+        return result;
     }
 }

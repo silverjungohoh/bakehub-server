@@ -6,6 +6,7 @@ import com.project.snsserver.domain.member.model.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PostService {
 
@@ -18,4 +19,9 @@ public interface PostService {
      * 글 수정
      */
     EditPostResponse updatePost(Long postId, EditPostRequest request, Member member);
+
+    /**
+     * 글 삭제
+     */
+    Map<String, String> deletePost(Long postId, Member member);
 }
