@@ -36,4 +36,17 @@ public class PostController {
         EditPostResponse response = postService.writePost(request, files, userDetails.getMember());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    /**
+     * 글 수정
+     */
+    @Operation(summary = "글 수정")
+    @PatchMapping("/{postId}")
+    public ResponseEntity<EditPostResponse> updatePost(@PathVariable Long postId,
+                                                       @RequestBody @Valid EditPostRequest request,
+                                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        EditPostResponse response = postService.updatePost(postId, request, userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
 }

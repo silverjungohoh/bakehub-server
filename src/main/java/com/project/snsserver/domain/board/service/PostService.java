@@ -13,4 +13,9 @@ public interface PostService {
      * 글 작성
      */
     EditPostResponse writePost(EditPostRequest request, List<MultipartFile> files, Member member);
+
+    /**
+     * 글 수정
+     */
+    EditPostResponse updatePost(Long postId, EditPostRequest request, Member member);
 }
