@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Objects;
 
 @Getter
 @Builder
@@ -24,7 +26,11 @@ public class PostImageResponse {
         return PostImageResponse.builder()
                 .postImageId(postImage.getId())
                 .postImageUrl(postImage.getPostImageUrl())
-                .createdAt(Timestamp.valueOf(postImage.getCreatedAt()))
+                .createdAt(
+                        Objects.isNull(postImage.getCreatedAt()) ?
+                                Timestamp.from(Instant.MIN)
+                                : Timestamp.valueOf(postImage.getCreatedAt())
+                )
                 .build();
     }
 }

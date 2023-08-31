@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Builder
@@ -34,7 +36,11 @@ public class EditPostResponse {
                 .content(post.getContent())
                 .nickname(post.getMember().getNickname())
                 .postImages(postImages)
-                .createdAt(Timestamp.valueOf(post.getCreatedAt()))
+                .createdAt(
+                        Objects.isNull(post.getCreatedAt()) ?
+                        Timestamp.from(Instant.MIN)
+                        : Timestamp.valueOf(post.getCreatedAt())
+                )
                 .build();
     }
 }
