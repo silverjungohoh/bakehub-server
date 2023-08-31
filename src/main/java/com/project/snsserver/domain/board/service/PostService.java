@@ -2,6 +2,7 @@ package com.project.snsserver.domain.board.service;
 
 import com.project.snsserver.domain.board.model.dto.EditPostRequest;
 import com.project.snsserver.domain.board.model.dto.EditPostResponse;
+import com.project.snsserver.domain.board.model.dto.PostImageResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,4 +25,9 @@ public interface PostService {
      * 글 삭제
      */
     Map<String, String> deletePost(Long postId, Member member);
+
+    /**
+     * 게시물 수정 시 이미지 등록
+     */
+    PostImageResponse addPostImage(Long postId, MultipartFile file);
 }

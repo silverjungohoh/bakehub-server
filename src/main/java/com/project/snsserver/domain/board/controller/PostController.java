@@ -2,6 +2,7 @@ package com.project.snsserver.domain.board.controller;
 
 import com.project.snsserver.domain.board.model.dto.EditPostRequest;
 import com.project.snsserver.domain.board.model.dto.EditPostResponse;
+import com.project.snsserver.domain.board.model.dto.PostImageResponse;
 import com.project.snsserver.domain.board.service.PostService;
 import com.project.snsserver.domain.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,4 +62,17 @@ public class PostController {
         Map<String, String> response = postService.deletePost(postId, userDetails.getMember());
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 이미지 등록
+     */
+    @Operation(summary = "이미지 등록")
+    @PostMapping("/{postId}/images")
+    public ResponseEntity<PostImageResponse> addPostImage(@PathVariable Long postId,
+                                                          @RequestPart(value = "image") MultipartFile file) {
+
+        PostImageResponse response = postService.addPostImage(postId, file);
+        return ResponseEntity.ok(response);
+    }
+
 }

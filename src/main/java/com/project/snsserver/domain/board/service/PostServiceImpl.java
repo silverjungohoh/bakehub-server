@@ -106,6 +106,24 @@ public class PostServiceImpl implements PostService {
         return getMessage("게시물이 삭제되었습니다.");
     }
 
+    @Override
+    @Transactional
+    public PostImageResponse addPostImage(Long postId, MultipartFile file) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        String imageUrl = awsS3Service.uploadFile(file, DIR);
+
+        PostImage postImage = PostImage.builder()
+                .post(post)
+                .postImageUrl(imageUrl)
+                .build();
+
+        postImageRepository.save(postImage);
+        return PostImageResponse.fromEntity(postImage);
+    }
+
     private static Map<String, String> getMessage(String message) {
         Map<String, String> result = new HashMap<>();
         result.put("result", message);
