@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -33,5 +34,16 @@ public class CommentController {
 
         EditCommentResponse response = commentService.writeComment(postId, request, userDetails.getMember());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * 댓글 삭제
+     */
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = commentService.deleteComment(postId, commentId, userDetails.getMember());
+        return ResponseEntity.ok(response);
     }
 }
