@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -30,5 +27,17 @@ public class PostHeartController {
 
         postHeartService.pushHeart(postId, userDetails.getMember());
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    /**
+     * 좋아요 취소
+     */
+    @Operation(summary = "게시물 좋아요 취소")
+    @DeleteMapping("/{postId}/hearts/{postHeartId}")
+    public ResponseEntity<Void> cancelHeart(@PathVariable Long postId, @PathVariable Long postHeartId,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        postHeartService.cancelHeart(postId, postHeartId, userDetails.getMember());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

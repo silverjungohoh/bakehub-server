@@ -21,7 +21,8 @@ public enum BoardErrorCode {
     FAIL_TO_DELETE_COMMENT(HttpStatus.UNAUTHORIZED, "E407", "댓글 삭제 권한은 작성자에게 있습니다."),
     FAIL_TO_UPDATE_COMMENT(HttpStatus.UNAUTHORIZED, "E408", "댓글 수정 권한은 작성자에게 있습니다."),
     ALREADY_PUSH_HEART(HttpStatus.CONFLICT, "E409", "이미 좋아요를 눌렀습니다."),
-    FAIL_TO_PUSH_HEART(HttpStatus.BAD_REQUEST, "E410", "자신의 게시물에 좋아요를 누를 수 없습니다.");
+    FAIL_TO_PUSH_HEART(HttpStatus.BAD_REQUEST, "E410", "자신의 게시물에 좋아요를 누를 수 없습니다."),
+    POST_HEART_NOT_FOUND(HttpStatus.NOT_FOUND, "E411", "좋아요를 취소할 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;

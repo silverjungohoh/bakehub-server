@@ -43,4 +43,17 @@ public class PostHeartServiceImpl implements PostHeartService {
 
         postHeartRepository.save(heart);
     }
+
+    @Override
+    @Transactional
+    public void cancelHeart(Long postId, Long postHeartId, Member member) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        PostHeart heart = postHeartRepository.findByPostAndMember(post, member)
+                .orElseThrow(() -> new BoardException(POST_HEART_NOT_FOUND));
+
+        postHeartRepository.delete(heart);
+    }
 }
