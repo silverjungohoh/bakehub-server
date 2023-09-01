@@ -1,5 +1,6 @@
 package com.project.snsserver.domain.board.service;
 
+import com.project.snsserver.domain.board.model.dto.PostHeartResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostHeart;
 import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
@@ -55,5 +56,16 @@ public class PostHeartServiceImpl implements PostHeartService {
                 .orElseThrow(() -> new BoardException(POST_HEART_NOT_FOUND));
 
         postHeartRepository.delete(heart);
+    }
+
+    @Override
+    public PostHeartResponse getPostHeartCountByPost(Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        Long heartCnt = postHeartRepository.countByPost(post);
+
+        return PostHeartResponse.from(post.getId(), heartCnt);
     }
 }

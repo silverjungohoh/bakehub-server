@@ -1,5 +1,6 @@
 package com.project.snsserver.domain.board.controller;
 
+import com.project.snsserver.domain.board.model.dto.PostHeartResponse;
 import com.project.snsserver.domain.board.service.PostHeartService;
 import com.project.snsserver.domain.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,5 +40,16 @@ public class PostHeartController {
 
         postHeartService.cancelHeart(postId, postHeartId, userDetails.getMember());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 게시물의 좋아요 개수 조회
+     */
+    @Operation(summary = "게시물 좋아요 개수 조회")
+    @GetMapping("/{postId}/hearts")
+    public ResponseEntity<PostHeartResponse> getPostHeartCountByPost(@PathVariable Long postId) {
+
+        PostHeartResponse response = postHeartService.getPostHeartCountByPost(postId);
+        return ResponseEntity.ok(response);
     }
 }
