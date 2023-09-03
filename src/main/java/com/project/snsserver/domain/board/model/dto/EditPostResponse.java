@@ -6,10 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Builder
@@ -27,7 +25,7 @@ public class EditPostResponse {
 
     private List<PostImageResponse> postImages;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     public static EditPostResponse fromEntity(Post post, List<PostImageResponse> postImages) {
         return EditPostResponse.builder()
@@ -36,11 +34,7 @@ public class EditPostResponse {
                 .content(post.getContent())
                 .nickname(post.getMember().getNickname())
                 .postImages(postImages)
-                .createdAt(
-                        Objects.isNull(post.getCreatedAt()) ?
-                        Timestamp.from(Instant.MIN)
-                        : Timestamp.valueOf(post.getCreatedAt())
-                )
+                .createdAt(post.getCreatedAt())
                 .build();
     }
 }

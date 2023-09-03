@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -20,14 +20,14 @@ public class CommentResponse {
 
     private String nickname;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     public static CommentResponse fromEntity(Comment comment) {
         return CommentResponse.builder()
                 .commentId(comment.getId())
                 .content(comment.getContent())
                 .nickname(comment.getMember().getNickname())
-                .createdAt(Timestamp.valueOf(comment.getCreatedAt()))
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 }
