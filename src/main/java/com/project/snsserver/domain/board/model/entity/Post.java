@@ -31,7 +31,7 @@ public class Post extends BaseTimeEntity {
     private Member member;
 
     @Builder.Default
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST)
     private List<PostImage> postImages = new ArrayList<>();
 
     @Builder.Default
