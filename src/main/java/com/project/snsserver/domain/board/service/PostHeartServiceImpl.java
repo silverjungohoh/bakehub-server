@@ -6,13 +6,17 @@ import com.project.snsserver.domain.board.model.entity.PostHeart;
 import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
 import com.project.snsserver.domain.board.repository.jpa.PostRepository;
 import com.project.snsserver.domain.member.model.entity.Member;
+import com.project.snsserver.domain.notification.model.dto.NotificationMessage;
+import com.project.snsserver.domain.notification.rabbitmq.NotificationProducer;
 import com.project.snsserver.global.error.exception.BoardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
+import static com.project.snsserver.domain.notification.type.NotificationType.NEW_HEART;
 import static com.project.snsserver.global.error.type.BoardErrorCode.*;
 
 @Service
@@ -21,6 +25,7 @@ public class PostHeartServiceImpl implements PostHeartService {
 
     private final PostHeartRepository postHeartRepository;
     private final PostRepository postRepository;
+    private final NotificationProducer notificationProducer;
 
     @Override
     @Transactional
@@ -29,11 +34,11 @@ public class PostHeartServiceImpl implements PostHeartService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        if(Objects.equals(member.getEmail(), post.getMember().getEmail())) {
+        if (Objects.equals(member.getEmail(), post.getMember().getEmail())) {
             throw new BoardException(FAIL_TO_PUSH_HEART);
         }
 
-        if(postHeartRepository.existsByPostAndMember(post, member)) {
+        if (postHeartRepository.existsByPostAndMember(post, member)) {
             throw new BoardException(ALREADY_PUSH_HEART);
         }
 
@@ -43,6 +48,15 @@ public class PostHeartServiceImpl implements PostHeartService {
                 .build();
 
         postHeartRepository.save(heart);
+
+        NotificationMessage message = NotificationMessage.builder()
+                .receiver(post.getMember().getEmail())
+                .type(NEW_HEART)
+                .content(String.format(NEW_HEART.getValue(), member.getNickname()))
+                .createdAt(Timestamp.valueOf(heart.getCreatedAt()))
+                .build();
+
+        notificationProducer.produce(message);
     }
 
     @Override
