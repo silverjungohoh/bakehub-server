@@ -4,6 +4,7 @@ import com.project.snsserver.domain.awss3.service.AwsS3Service;
 import com.project.snsserver.domain.board.model.dto.EditPostRequest;
 import com.project.snsserver.domain.board.model.dto.EditPostResponse;
 import com.project.snsserver.domain.board.model.dto.PostImageResponse;
+import com.project.snsserver.domain.board.model.dto.PostResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
 import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
@@ -11,6 +12,8 @@ import com.project.snsserver.domain.board.repository.jpa.PostRepository;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.error.exception.BoardException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -138,6 +141,12 @@ public class PostServiceImpl implements PostService {
         awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR);
 
         return getMessage("이미지가 삭제되었습니다.");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable) {
+        return postRepository.findAllPostsWithCommentCntAndHeartCnt(lastPostId, pageable);
     }
 
     private static Map<String, String> getMessage(String message) {

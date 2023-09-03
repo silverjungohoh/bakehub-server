@@ -3,7 +3,10 @@ package com.project.snsserver.domain.board.service;
 import com.project.snsserver.domain.board.model.dto.EditPostRequest;
 import com.project.snsserver.domain.board.model.dto.EditPostResponse;
 import com.project.snsserver.domain.board.model.dto.PostImageResponse;
+import com.project.snsserver.domain.board.model.dto.PostResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -35,4 +38,9 @@ public interface PostService {
      * 게시물 수정 시 이미지 삭제
      */
     Map<String, String> deletePostImage(Long postId, Long postImageId);
+
+    /**
+     * 게시물 목록 조회
+     */
+    Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable);
 }
