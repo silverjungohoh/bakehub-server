@@ -1,13 +1,11 @@
 package com.project.snsserver.domain.board.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +19,7 @@ public class PostResponse {
 
     private String nickname;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     private Long commentCnt;
 
