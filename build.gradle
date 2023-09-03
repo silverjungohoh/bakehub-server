@@ -1,3 +1,9 @@
+buildscript{
+    ext{
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.15'
@@ -44,6 +50,14 @@ dependencies {
     //rabbitmq
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
+    //querydsl
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
+    implementation "com.querydsl:querydsl-collections"
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'
@@ -53,4 +67,22 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// querydsl 설정
+def generated = 'src/main/generated'
+
+// query QClass 파일 생성 위치를 지정
+tasks.withType(JavaCompile){
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+// java source set에 querydsl QClass 위치 추가
+sourceSets{
+    main.java.srcDirs += [ generated ]
+}
+
+// gradle clean 시에 QClass 디렉토리 삭제
+clean {
+    delete file(generated)
 }

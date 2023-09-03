@@ -3,11 +3,15 @@ package com.project.snsserver.domain.board.controller;
 import com.project.snsserver.domain.board.model.dto.EditPostRequest;
 import com.project.snsserver.domain.board.model.dto.EditPostResponse;
 import com.project.snsserver.domain.board.model.dto.PostImageResponse;
+import com.project.snsserver.domain.board.model.dto.PostResponse;
 import com.project.snsserver.domain.board.service.PostService;
 import com.project.snsserver.domain.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -84,6 +88,17 @@ public class PostController {
                                                                @PathVariable Long postImageId) {
 
         Map<String, String> response = postService.deletePostImage(postId, postImageId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 글 목록 조회
+     */
+    @Operation(summary = "글 목록 조회")
+    @GetMapping
+    public ResponseEntity<Slice<PostResponse>> getPosts(@PageableDefault Pageable pageable, @RequestParam(required = false) Long lastPostId) {
+
+        Slice<PostResponse> response = postService.getPosts(lastPostId, pageable);
         return ResponseEntity.ok(response);
     }
 }

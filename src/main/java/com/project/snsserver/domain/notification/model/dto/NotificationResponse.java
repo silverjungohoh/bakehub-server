@@ -15,18 +15,21 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class NotificationResponse {
 
+    private Long notificationId;
+
     private String type;
 
     private String content;
 
-    private Timestamp createdAt; // 좋아요 or 댓글을 남긴 시간
+    private Timestamp createdAt;
 
 
-    public static NotificationResponse fromEntity(Notification notification, Timestamp createdAt) {
+    public static NotificationResponse fromEntity(Notification notification) {
         return NotificationResponse.builder()
+                .notificationId(notification.getId())
                 .type(notification.getNotificationType().name())
                 .content(notification.getContent())
-                .createdAt(createdAt)
+                .createdAt(Timestamp.valueOf(notification.getCreatedAt()))
                 .build();
     }
 }
