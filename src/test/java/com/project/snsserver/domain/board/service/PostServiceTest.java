@@ -6,6 +6,8 @@ import com.project.snsserver.domain.board.model.dto.EditPostResponse;
 import com.project.snsserver.domain.board.model.dto.PostImageResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
+import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
+import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
 import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
 import com.project.snsserver.domain.board.repository.jpa.PostRepository;
 import com.project.snsserver.domain.member.model.entity.Member;
@@ -39,6 +41,12 @@ class PostServiceTest {
 
     @Mock
     private PostImageRepository postImageRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
+
+    @Mock
+    private PostHeartRepository postHeartRepository;
 
     @Mock
     private AwsS3Service awsS3Service;
@@ -189,6 +197,9 @@ class PostServiceTest {
                 .build();
 
         given(postRepository.findById(anyLong())).willReturn(Optional.of(post));
+        given(commentRepository.deleteCommentAllByPostId(anyLong())).willReturn(1L);
+        given(postHeartRepository.deletePostHeartAllByPostId(anyLong())).willReturn(1L);
+        given(postImageRepository.deleteAllPostImageByPostId(anyLong())).willReturn(1L);
 
         ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
 

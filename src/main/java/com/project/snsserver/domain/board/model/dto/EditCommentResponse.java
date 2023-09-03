@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -22,18 +20,14 @@ public class EditCommentResponse {
 
     private String nickname;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     public static EditCommentResponse fromEntity(Comment comment) {
         return EditCommentResponse.builder()
                 .commentId(comment.getId())
                 .content(comment.getContent())
                 .nickname(comment.getMember().getNickname())
-                .createdAt(
-                        Objects.isNull(comment.getCreatedAt()) ?
-                                Timestamp.from(Instant.MIN)
-                                : Timestamp.valueOf(comment.getCreatedAt())
-                )
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 }

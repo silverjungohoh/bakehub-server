@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface PostHeartRepository extends JpaRepository<PostHeart, Long> {
+public interface PostHeartRepository extends JpaRepository<PostHeart, Long>, CustomPostHeartRepository {
 
     boolean existsByPostAndMember(Post post, Member member);
 

@@ -1,13 +1,12 @@
 package com.project.snsserver.domain.notification.model.dto;
 
 import com.project.snsserver.domain.notification.model.entity.Notification;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -21,7 +20,7 @@ public class NotificationResponse {
 
     private String content;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
 
     public static NotificationResponse fromEntity(Notification notification) {
@@ -29,7 +28,7 @@ public class NotificationResponse {
                 .notificationId(notification.getId())
                 .type(notification.getNotificationType().name())
                 .content(notification.getContent())
-                .createdAt(Timestamp.valueOf(notification.getCreatedAt()))
+                .createdAt(notification.getCreatedAt())
                 .build();
     }
 }
