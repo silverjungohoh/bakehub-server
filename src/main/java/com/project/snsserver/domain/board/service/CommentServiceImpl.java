@@ -1,5 +1,6 @@
 package com.project.snsserver.domain.board.service;
 
+import com.project.snsserver.domain.board.model.dto.CommentResponse;
 import com.project.snsserver.domain.board.model.dto.EditCommentRequest;
 import com.project.snsserver.domain.board.model.dto.EditCommentResponse;
 import com.project.snsserver.domain.board.model.entity.Comment;
@@ -11,6 +12,8 @@ import com.project.snsserver.domain.notification.model.dto.NotificationMessage;
 import com.project.snsserver.domain.notification.rabbitmq.NotificationProducer;
 import com.project.snsserver.global.error.exception.BoardException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +95,16 @@ public class CommentServiceImpl implements CommentService {
 
         comment.update(request.getContent());
         return EditCommentResponse.fromEntity(comment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<CommentResponse> getCommentsByPost(Long postId, Long lastCommentId, Pageable pageable) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        return commentRepository.findCommentAllByPostId(post.getId(), lastCommentId, pageable);
     }
 
     private static Map<String, String> getMessage(String message) {

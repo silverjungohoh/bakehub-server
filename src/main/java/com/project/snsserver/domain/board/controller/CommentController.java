@@ -1,5 +1,6 @@
 package com.project.snsserver.domain.board.controller;
 
+import com.project.snsserver.domain.board.model.dto.CommentResponse;
 import com.project.snsserver.domain.board.model.dto.EditCommentRequest;
 import com.project.snsserver.domain.board.model.dto.EditCommentResponse;
 import com.project.snsserver.domain.board.service.CommentService;
@@ -7,6 +8,9 @@ import com.project.snsserver.domain.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -58,6 +62,20 @@ public class CommentController {
                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         EditCommentResponse response = commentService.updateComment(postId, commentId, request, userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 게시물 댓글 조회
+     */
+    @Operation(summary = "게시물 댓글 조회")
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<Slice<CommentResponse>> getCommentsByPost(@PathVariable Long postId,
+                                               @RequestParam(required = false) Long lastCommentId,
+                                               @PageableDefault Pageable pageable) {
+
+        Slice<CommentResponse> response
+                = commentService.getCommentsByPost(postId, lastCommentId, pageable);
         return ResponseEntity.ok(response);
     }
 }
