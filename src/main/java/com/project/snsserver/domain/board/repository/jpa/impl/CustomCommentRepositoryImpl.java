@@ -42,6 +42,16 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
         return checkLastPage(pageable, comments);
     }
 
+    /**
+     * 특정 게시물의 댓글 전체 삭제
+     */
+    @Override
+    public Long deleteCommentAllByPostId(Long postId) {
+        return queryFactory.delete(comment)
+                .where(comment.post.id.eq(postId))
+                .execute();
+    }
+
     private BooleanExpression lastCommentId(Long lastCommentId) {
         if (lastCommentId == null) {
             return null;

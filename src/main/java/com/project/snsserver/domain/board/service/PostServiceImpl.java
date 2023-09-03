@@ -7,6 +7,7 @@ import com.project.snsserver.domain.board.model.dto.PostImageResponse;
 import com.project.snsserver.domain.board.model.dto.PostResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
+import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
 import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
 import com.project.snsserver.domain.board.repository.jpa.PostRepository;
 import com.project.snsserver.domain.member.model.entity.Member;
@@ -32,6 +33,7 @@ public class PostServiceImpl implements PostService {
     private final AwsS3Service awsS3Service;
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -105,6 +107,7 @@ public class PostServiceImpl implements PostService {
             postImages.forEach((postImage -> awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR)));
         }
 
+        commentRepository.deleteCommentAllByPostId(postId);
         postRepository.delete(post);
         return getMessage("게시물이 삭제되었습니다.");
     }
