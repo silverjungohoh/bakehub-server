@@ -9,7 +9,10 @@ import com.project.snsserver.domain.notification.repository.jpa.NotificationRepo
 import com.project.snsserver.domain.notification.sse.SseConnectionPool;
 import com.project.snsserver.global.error.exception.MemberException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -49,5 +52,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         Optional.ofNullable(sseConnection)
                 .ifPresent((it) -> it.sendMessage(NAME, response));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<NotificationResponse> getNotificationsByMember(Pageable pageable, Member member, Long lastNotificationId) {
+        return notificationRepository
+                .findNotificationAllByMemberId(member.getId(), lastNotificationId, pageable);
     }
 }
