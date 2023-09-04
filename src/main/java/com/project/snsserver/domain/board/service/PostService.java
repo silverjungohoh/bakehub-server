@@ -1,9 +1,6 @@
 package com.project.snsserver.domain.board.service;
 
-import com.project.snsserver.domain.board.model.dto.EditPostRequest;
-import com.project.snsserver.domain.board.model.dto.EditPostResponse;
-import com.project.snsserver.domain.board.model.dto.PostImageResponse;
-import com.project.snsserver.domain.board.model.dto.PostResponse;
+import com.project.snsserver.domain.board.model.dto.*;
 import com.project.snsserver.domain.member.model.entity.Member;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -43,4 +40,9 @@ public interface PostService {
      * 게시물 목록 조회
      */
     Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable);
+
+    /**
+     * 게시물 상세 조회
+     */
+    PostDetailResponse getPostDetail(Long postId);
 }

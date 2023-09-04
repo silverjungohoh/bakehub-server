@@ -1,10 +1,7 @@
 package com.project.snsserver.domain.board.service;
 
 import com.project.snsserver.domain.awss3.service.AwsS3Service;
-import com.project.snsserver.domain.board.model.dto.EditPostRequest;
-import com.project.snsserver.domain.board.model.dto.EditPostResponse;
-import com.project.snsserver.domain.board.model.dto.PostImageResponse;
-import com.project.snsserver.domain.board.model.dto.PostResponse;
+import com.project.snsserver.domain.board.model.dto.*;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
 import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
@@ -155,6 +152,16 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable) {
         return postRepository.findAllPostsWithCommentCntAndHeartCnt(lastPostId, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostDetailResponse getPostDetail(Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        return postRepository.findPostDetailByPostId(post.getId());
     }
 
     private static Map<String, String> getMessage(String message) {
