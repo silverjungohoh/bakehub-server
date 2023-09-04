@@ -1,9 +1,6 @@
 package com.project.snsserver.domain.board.controller;
 
-import com.project.snsserver.domain.board.model.dto.EditPostRequest;
-import com.project.snsserver.domain.board.model.dto.EditPostResponse;
-import com.project.snsserver.domain.board.model.dto.PostImageResponse;
-import com.project.snsserver.domain.board.model.dto.PostResponse;
+import com.project.snsserver.domain.board.model.dto.*;
 import com.project.snsserver.domain.board.service.PostService;
 import com.project.snsserver.domain.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,6 +96,17 @@ public class PostController {
     public ResponseEntity<Slice<PostResponse>> getPosts(@PageableDefault Pageable pageable, @RequestParam(required = false) Long lastPostId) {
 
         Slice<PostResponse> response = postService.getPosts(lastPostId, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 글 상세 조회
+     */
+    @Operation(summary = "글 상세 조회")
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId) {
+
+        PostDetailResponse response = postService.getPostDetail(postId);
         return ResponseEntity.ok(response);
     }
 }

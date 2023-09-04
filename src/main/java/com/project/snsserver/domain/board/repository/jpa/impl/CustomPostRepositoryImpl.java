@@ -1,5 +1,7 @@
 package com.project.snsserver.domain.board.repository.jpa.impl;
 
+import com.project.snsserver.domain.board.model.dto.PostDetailResponse;
+import com.project.snsserver.domain.board.model.dto.PostImageResponse;
 import com.project.snsserver.domain.board.model.dto.PostResponse;
 import com.project.snsserver.domain.board.repository.jpa.CustomPostRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -14,7 +16,10 @@ import java.util.List;
 import static com.project.snsserver.domain.board.model.entity.QComment.comment;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.board.model.entity.QPostHeart.postHeart;
+import static com.project.snsserver.domain.board.model.entity.QPostImage.postImage;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 import static com.querydsl.core.types.ExpressionUtils.as;
 import static com.querydsl.core.types.Projections.bean;
 import static com.querydsl.jpa.JPAExpressions.select;
@@ -48,6 +53,40 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                 .orderBy(post.createdAt.desc())
                 .fetch();
         return checkLastPage(pageable, posts);
+    }
+
+    @Override
+    public PostDetailResponse findPostDetailByPostId(Long postId) {
+
+        return queryFactory
+                .selectFrom(post)
+                .leftJoin(post.comments, comment)
+                .leftJoin(post.member, member)
+                .leftJoin(post.postImages, postImage)
+                .where(post.id.eq(postId))
+                .groupBy(postImage.id)
+                .transform(groupBy(post.id).as(
+                        bean(PostDetailResponse.class,
+                                post.id.as("postId"),
+                                post.title.as("title"),
+                                post.content.as("content"),
+                                member.nickname.as("nickname"),
+                                post.createdAt.as("createdAt"),
+                                comment.id.count().as("commentCnt"),
+                                as(select(postHeart.id.count())
+                                                .from(postHeart)
+                                                .where(postHeart.post.id.eq(post.id)),
+                                        "heartCnt"),
+
+                                list(
+                                        bean(PostImageResponse.class,
+                                                postImage.id.as("postImageId"),
+                                                postImage.postImageUrl.as("postImageUrl"),
+                                                postImage.createdAt.as("createdAt"))
+                                ).as("postImages")
+                        )
+                ))
+                .get(postId);
     }
 
     private BooleanExpression lastPostId(Long lastPostId) {

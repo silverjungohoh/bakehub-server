@@ -1,13 +1,11 @@
 package com.project.snsserver.domain.board.model.dto;
 
 import com.project.snsserver.domain.board.model.entity.PostImage;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor
