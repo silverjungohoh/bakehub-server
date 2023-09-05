@@ -43,7 +43,7 @@ public class Post extends BaseTimeEntity {
     private List<PostHeart> hearts = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST)
     private List<PostHashtag> hashtags = new ArrayList<>();
 
     public void update(String title, String content) {

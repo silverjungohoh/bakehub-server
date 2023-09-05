@@ -111,6 +111,7 @@ public class PostServiceImpl implements PostService {
         commentRepository.deleteCommentAllByPostId(postId);
         postHeartRepository.deletePostHeartAllByPostId(postId);
         postImageRepository.deleteAllPostImageByPostId(postId);
+        postHashtagRepository.deletePostHashtagAllByPostId(postId);
 
         postRepository.delete(post);
         return getMessage("게시물이 삭제되었습니다.");

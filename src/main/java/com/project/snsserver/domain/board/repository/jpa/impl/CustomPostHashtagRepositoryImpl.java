@@ -30,4 +30,11 @@ public class CustomPostHashtagRepositoryImpl implements CustomPostHashtagReposit
                 .where(postHashtag.post.id.eq(postId))
                 .fetch();
     }
+
+    @Override
+    public Long deletePostHashtagAllByPostId(Long postId) {
+        return queryFactory.delete(postHashtag)
+                .where(postHashtag.post.id.eq(postId))
+                .execute();
+    }
 }
