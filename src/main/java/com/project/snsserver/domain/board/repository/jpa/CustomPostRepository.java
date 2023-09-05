@@ -11,4 +11,6 @@ public interface CustomPostRepository {
     Slice<PostResponse> findAllPostsWithCommentCntAndHeartCnt(Long lastPostId, Pageable pageable);
 
     PostDetailResponse findPostDetailByPostId(Long postId);
+
+    Slice<PostResponse> findAllPostsByHashtag(Long lastPostId, String name, Pageable pageable);
 }

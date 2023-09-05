@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.project.snsserver.domain.board.model.entity.QComment.comment;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
+import static com.project.snsserver.domain.board.model.entity.QPostHashtag.postHashtag;
 import static com.project.snsserver.domain.board.model.entity.QPostHeart.postHeart;
 import static com.project.snsserver.domain.board.model.entity.QPostImage.postImage;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
@@ -87,6 +88,35 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                         )
                 ))
                 .get(postId);
+    }
+
+    @Override
+    public Slice<PostResponse> findAllPostsByHashtag(Long lastPostId, String name, Pageable pageable) {
+
+        List<PostResponse> postsByHashtag  = queryFactory.select(
+                        bean(PostResponse.class,
+                                post.id.as("postId"),
+                                post.title.as("title"),
+                                post.content.as("content"),
+                                member.nickname.as("nickname"),
+                                post.createdAt.as("createdAt"),
+                                as(select(comment.id.count()).from(comment)
+                                                .where(comment.post.id.eq(post.id)),
+                                        "commentCnt"),
+                                as(select(postHeart.id.count()).from(postHeart)
+                                                .where(postHeart.post.id.eq(post.id)),
+                                        "heartCnt")
+                        )
+                )
+                .from(postHashtag)
+                .leftJoin(postHashtag.post, post)
+                .leftJoin(postHashtag.post.member, member)
+                .where(lastPostId(lastPostId), postHashtag.hashtag.name.eq(name))
+                .limit(pageable.getPageSize() + 1)
+                .orderBy(post.createdAt.desc())
+                .fetch();
+
+        return checkLastPage(pageable, postsByHashtag);
     }
 
     private BooleanExpression lastPostId(Long lastPostId) {

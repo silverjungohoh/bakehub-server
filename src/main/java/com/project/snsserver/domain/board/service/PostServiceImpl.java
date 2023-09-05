@@ -177,6 +177,12 @@ public class PostServiceImpl implements PostService {
         return postHashtagRepository.findAllPostHashtagByPostId(post.getId());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<PostResponse> getPostsByHashtag(Long lastPostId, String tag, Pageable pageable) {
+        return postRepository.findAllPostsByHashtag(lastPostId, tag, pageable);
+    }
+
     private static Map<String, String> getMessage(String message) {
         Map<String, String> result = new HashMap<>();
         result.put("result", message);
