@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -18,4 +20,7 @@ public class EditPostRequest {
 
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
+
+    @Size(max = 5, message = "해시태그는 최대 5개까지 입력 가능합니다.")
+    private Set<String> tagNames;
 }

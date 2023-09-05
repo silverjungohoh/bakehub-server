@@ -4,10 +4,7 @@ import com.project.snsserver.domain.awss3.service.AwsS3Service;
 import com.project.snsserver.domain.board.model.dto.*;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
-import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostRepository;
+import com.project.snsserver.domain.board.repository.jpa.*;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.error.exception.BoardException;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +30,7 @@ public class PostServiceImpl implements PostService {
     private final PostImageRepository postImageRepository;
     private final CommentRepository commentRepository;
     private final PostHeartRepository postHeartRepository;
+    private final PostHashtagService postHashtagService;
 
     @Override
     @Transactional
@@ -66,6 +64,9 @@ public class PostServiceImpl implements PostService {
                 postImageRepository.save(image);
                 postImgResponse.add(PostImageResponse.fromEntity(image));
             }
+        }
+        if(!Objects.isNull(request.getTagNames())) {
+            postHashtagService.createPostHashtag(post, request.getTagNames());
         }
         return EditPostResponse.fromEntity(post, postImgResponse);
     }
