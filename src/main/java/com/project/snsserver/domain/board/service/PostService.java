@@ -45,4 +45,14 @@ public interface PostService {
      * 게시물 상세 조회
      */
     PostDetailResponse getPostDetail(Long postId);
+
+    /**
+     * 게시물의 해시태그 목록 조회
+     */
+    List<PostHashtagResponse> getPostHashtags(Long postId);
+
+    /**
+     * 해시태그에 따른 글 목록 조회
+     */
+    Slice<PostResponse> getPostsByHashtag(Long lastPostId, String tag, Pageable pageable);
 }

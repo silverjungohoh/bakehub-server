@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
-@Tag(name = "게시판", description = "게시판 API Document - 게시물")
+@Tag(name = "게시물", description = "게시판 API Document - 게시물")
 public class PostController {
 
     private final PostService postService;
@@ -107,6 +107,30 @@ public class PostController {
     public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId) {
 
         PostDetailResponse response = postService.getPostDetail(postId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 글 해시태그 목록 조회
+     */
+    @Operation(summary = "글 해시태그 목록 조회")
+    @GetMapping("/{postId}/tags")
+    public ResponseEntity<List<PostHashtagResponse>> getPostHashtagsByPost(@PathVariable Long postId) {
+
+        List<PostHashtagResponse> response = postService.getPostHashtags(postId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 해시태그에 따른 글 목록 조회
+     */
+    @Operation(summary = "해시태그에 따른 글 목록 조회")
+    @GetMapping("/search")
+    public ResponseEntity<Slice<PostResponse>> getPostsByHashtag(@RequestParam(required = false) Long postLastId,
+                                               @RequestParam String tag,
+                                               @PageableDefault Pageable pageable) {
+
+        Slice<PostResponse> response = postService.getPostsByHashtag(postLastId, tag, pageable);
         return ResponseEntity.ok(response);
     }
 }

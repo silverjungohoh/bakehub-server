@@ -4,10 +4,7 @@ import com.project.snsserver.domain.awss3.service.AwsS3Service;
 import com.project.snsserver.domain.board.model.dto.*;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
-import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostRepository;
+import com.project.snsserver.domain.board.repository.jpa.*;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.error.exception.BoardException;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +30,8 @@ public class PostServiceImpl implements PostService {
     private final PostImageRepository postImageRepository;
     private final CommentRepository commentRepository;
     private final PostHeartRepository postHeartRepository;
+    private final PostHashtagService postHashtagService;
+    private final PostHashtagRepository postHashtagRepository;
 
     @Override
     @Transactional
@@ -66,6 +65,9 @@ public class PostServiceImpl implements PostService {
                 postImageRepository.save(image);
                 postImgResponse.add(PostImageResponse.fromEntity(image));
             }
+        }
+        if(!Objects.isNull(request.getTagNames())) {
+            postHashtagService.createPostHashtag(post, request.getTagNames());
         }
         return EditPostResponse.fromEntity(post, postImgResponse);
     }
@@ -109,6 +111,7 @@ public class PostServiceImpl implements PostService {
         commentRepository.deleteCommentAllByPostId(postId);
         postHeartRepository.deletePostHeartAllByPostId(postId);
         postImageRepository.deleteAllPostImageByPostId(postId);
+        postHashtagRepository.deletePostHashtagAllByPostId(postId);
 
         postRepository.delete(post);
         return getMessage("게시물이 삭제되었습니다.");
@@ -162,6 +165,22 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
         return postRepository.findPostDetailByPostId(post.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PostHashtagResponse> getPostHashtags(Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        return postHashtagRepository.findAllPostHashtagByPostId(post.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<PostResponse> getPostsByHashtag(Long lastPostId, String tag, Pageable pageable) {
+        return postRepository.findAllPostsByHashtag(lastPostId, tag, pageable);
     }
 
     private static Map<String, String> getMessage(String message) {
