@@ -109,4 +109,15 @@ public class PostController {
         PostDetailResponse response = postService.getPostDetail(postId);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 글 해시태그 목록 조회
+     */
+    @Operation(summary = "글 해시태그 목록 조회")
+    @GetMapping("/{postId}/tags")
+    public ResponseEntity<List<PostHashtagResponse>> getPostHashtagsByPost(@PathVariable Long postId) {
+
+        List<PostHashtagResponse> response = postService.getPostHashtags(postId);
+        return ResponseEntity.ok(response);
+    }
 }

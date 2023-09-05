@@ -31,6 +31,7 @@ public class PostServiceImpl implements PostService {
     private final CommentRepository commentRepository;
     private final PostHeartRepository postHeartRepository;
     private final PostHashtagService postHashtagService;
+    private final PostHashtagRepository postHashtagRepository;
 
     @Override
     @Transactional
@@ -163,6 +164,16 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
         return postRepository.findPostDetailByPostId(post.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PostHashtagResponse> getPostHashtags(Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+
+        return postHashtagRepository.findAllPostHashtagByPostId(post.getId());
     }
 
     private static Map<String, String> getMessage(String message) {
