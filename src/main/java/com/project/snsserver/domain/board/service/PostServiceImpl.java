@@ -164,7 +164,13 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        return postRepository.findPostDetailByPostId(post.getId());
+        PostResponse postResponse
+                = postRepository.findPostByPostId(post.getId());
+
+        List<PostImageResponse> postImageResponse
+                = postImageRepository.findAllPostImageByPostId(post.getId());
+
+        return PostDetailResponse.from(postResponse, postImageResponse);
     }
 
     @Override

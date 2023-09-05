@@ -27,4 +27,17 @@ public class PostDetailResponse {
     private Long heartCnt;
 
     private LocalDateTime createdAt;
+
+    public static PostDetailResponse from (PostResponse post, List<PostImageResponse> images) {
+        return PostDetailResponse.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .nickname(post.getNickname())
+                .createdAt(post.getCreatedAt())
+                .commentCnt(post.getCommentCnt())
+                .heartCnt(post.getHeartCnt())
+                .postImages(images)
+                .build();
+    }
 }
