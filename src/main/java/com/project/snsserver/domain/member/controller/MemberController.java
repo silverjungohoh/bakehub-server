@@ -124,4 +124,16 @@ public class MemberController {
         Map<String, String> response = memberService.updatePassword(request, userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 회원 닉네임 변경
+     */
+    @Operation(summary = "회원 닉네임 변경")
+    @PatchMapping("/info/nickname")
+    public ResponseEntity<Map<String, String>> updateNickname(@RequestBody @Valid UpdateNicknameRequest request,
+                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = memberService.updateNickname(request, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
 }

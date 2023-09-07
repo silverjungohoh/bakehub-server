@@ -220,6 +220,21 @@ public class MemberServiceImpl implements MemberService {
         return getMessage("비밀번호 변경이 완료되었습니다.");
     }
 
+    @Override
+    @Transactional
+    public Map<String, String> updateNickname(UpdateNicknameRequest request, String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        if(memberRepository.existsByNickname(request.getNickname())) {
+            throw new MemberException(DUPLICATED_NICKNAME);
+        }
+
+        member.updateNickname(request.getNickname());
+        return getMessage("닉네임 변경이 완료되었습니다.");
+    }
+
 
     private static Map<String, String> getMessage(String message) {
         Map<String, String> result = new HashMap<>();

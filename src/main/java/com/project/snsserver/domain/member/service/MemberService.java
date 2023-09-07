@@ -51,4 +51,9 @@ public interface MemberService {
      * 회원 비밀번호 수정
      */
     Map<String, String> updatePassword(UpdatePasswordRequest request, String email);
+
+    /**
+     * 회원 닉네임 수정
+     */
+    Map<String, String> updateNickname(UpdateNicknameRequest request, String email);
 }
