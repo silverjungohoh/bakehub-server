@@ -112,4 +112,16 @@ public class MemberController {
         Map<String, String> response = memberService.logout(request, userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 회원 비밀번호 변경
+     */
+    @Operation(summary = "회원 비밀번호 변경")
+    @PatchMapping("/info/password")
+    public ResponseEntity<Map<String, String>> updatePassword(@RequestBody @Valid UpdatePasswordRequest request,
+                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = memberService.updatePassword(request, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
 }

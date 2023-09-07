@@ -205,6 +205,21 @@ public class MemberServiceImpl implements MemberService {
         return getMessage("로그아웃에 성공하였습니다.");
     }
 
+    @Override
+    @Transactional
+    public Map<String, String> updatePassword(UpdatePasswordRequest request, String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() ->  new MemberException(MEMBER_NOT_FOUND));
+
+        if(!Objects.equals(request.getPassword(), request.getPasswordCheck())) {
+            throw new MemberException(INCORRECT_PASSWORD_CHECK);
+        }
+
+        member.updatePassword(passwordEncoder.encode(request.getPassword()));
+        return getMessage("비밀번호 변경이 완료되었습니다.");
+    }
+
 
     private static Map<String, String> getMessage(String message) {
         Map<String, String> result = new HashMap<>();

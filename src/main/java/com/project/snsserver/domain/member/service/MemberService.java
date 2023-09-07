@@ -46,4 +46,9 @@ public interface MemberService {
      * 회원 로그아웃
      */
     Map<String, String> logout(LogoutRequest request, String email);
+
+    /**
+     * 회원 비밀번호 수정
+     */
+    Map<String, String> updatePassword(UpdatePasswordRequest request, String email);
 }
