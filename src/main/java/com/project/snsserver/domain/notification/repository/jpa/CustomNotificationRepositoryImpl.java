@@ -39,6 +39,13 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         return checkLastPage(pageable, notifications);
     }
 
+    @Override
+    public Long deleteNotificationAllByMemberId(Long memberId) {
+        return queryFactory.delete(notification)
+                .where(notification.member.id.eq(memberId))
+                .execute();
+    }
+
     private BooleanExpression lastNotificationId(Long lastNotificationId) {
         if(lastNotificationId == null) {
             return null;

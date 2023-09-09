@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.member.service;
 
 import com.project.snsserver.domain.awss3.service.AwsS3Service;
+import com.project.snsserver.domain.board.repository.jpa.*;
 import com.project.snsserver.domain.mail.model.MailMessage;
 import com.project.snsserver.domain.mail.service.MailService;
 import com.project.snsserver.domain.member.model.dto.*;
@@ -14,6 +15,7 @@ import com.project.snsserver.domain.member.repository.redis.MemberAuthCodeReposi
 import com.project.snsserver.domain.member.repository.redis.RefreshTokenRepository;
 import com.project.snsserver.domain.member.type.MemberRole;
 import com.project.snsserver.domain.member.type.MemberStatus;
+import com.project.snsserver.domain.notification.repository.jpa.NotificationRepository;
 import com.project.snsserver.domain.security.CustomUserDetails;
 import com.project.snsserver.domain.security.jwt.JwtTokenProvider;
 import com.project.snsserver.global.error.exception.MemberException;
@@ -50,6 +52,12 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final LogoutAccessTokenRepository logoutAccessTokenRepository;
+    private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
+    private final PostHeartRepository postHeartRepository;
+    private final NotificationRepository notificationRepository;
+    private final PostImageRepository postImageRepository;
+    private final PostHashtagRepository postHashtagRepository;
 
 
     @Override
@@ -203,6 +211,88 @@ public class MemberServiceImpl implements MemberService {
         refreshTokenRepository.deleteById(email);
 
         return getMessage("로그아웃에 성공하였습니다.");
+    }
+
+    @Override
+    @Transactional
+    public Map<String, String> updatePassword(UpdatePasswordRequest request, String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() ->  new MemberException(MEMBER_NOT_FOUND));
+
+        if(!Objects.equals(request.getPassword(), request.getPasswordCheck())) {
+            throw new MemberException(INCORRECT_PASSWORD_CHECK);
+        }
+
+        member.updatePassword(passwordEncoder.encode(request.getPassword()));
+        return getMessage("비밀번호 변경이 완료되었습니다.");
+    }
+
+    @Override
+    @Transactional
+    public Map<String, String> updateNickname(UpdateNicknameRequest request, String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        if(memberRepository.existsByNickname(request.getNickname())) {
+            throw new MemberException(DUPLICATED_NICKNAME);
+        }
+
+        member.updateNickname(request.getNickname());
+        return getMessage("닉네임 변경이 완료되었습니다.");
+    }
+
+    @Override
+    @Transactional
+    public Map<String, String> updateProfileImg(MultipartFile file, String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        String newProfileImgUrl = awsS3Service.uploadFile(file, DIR);
+        awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
+
+        member.updateProfileImg(newProfileImgUrl);
+        return getMessage("프로필 이미지 변경이 완료되었습니다.");
+    }
+
+    @Override
+    @Transactional
+    public Map<String, String> withdraw(WithdrawRequest request, Member member) {
+
+        if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new MemberException(FAIL_TO_WITHDRAWAL);
+        }
+
+        // 회원이 작성한 댓글, 좋아요 삭제
+        commentRepository.deleteCommentAllByMemberId(member.getId());
+        postHeartRepository.deletePostHeartAllByMemberId(member.getId());
+
+        // 회원의 게시물에 달린 댓글, 좋아요, 해시태그 삭제
+        commentRepository.deleteCommentAllInPostIdsByMemberId(member.getId());
+        postHeartRepository.deletePostHeartAllInPostIdsByMemberId(member.getId());
+        postHashtagRepository.deletePostHashtagAllInPostIdsByMemberId(member.getId());
+
+        // 회원의 게시물 이미지 삭제
+        postImageRepository.deleteAllPostImageInPostIdsByMemberId(member.getId());
+
+        // 회원의 알림 전체 삭제
+        notificationRepository.deleteNotificationAllByMemberId(member.getId());
+
+        // 회원의 게시물 전체 삭제
+        postRepository.deleteAllPostByMemberId(member.getId());
+
+        awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
+        memberRepository.delete(member);
+
+        return getMessage("회원 탈퇴가 완료되었습니다.");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberDetailResponse getMemberDetail(Member member) {
+        return memberRepository.findMemberDetailByMemberId(member.getId());
     }
 
 

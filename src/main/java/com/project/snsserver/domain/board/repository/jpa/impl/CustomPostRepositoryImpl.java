@@ -112,6 +112,13 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
         return checkLastPage(pageable, postsByHashtag);
     }
 
+    @Override
+    public Long deleteAllPostByMemberId(Long memberId) {
+        return queryFactory.delete(post)
+                .where(post.member.id.eq(memberId))
+                .execute();
+    }
+
     private BooleanExpression lastPostId(Long lastPostId) {
         if (lastPostId == null) {
             return null;

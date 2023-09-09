@@ -112,4 +112,62 @@ public class MemberController {
         Map<String, String> response = memberService.logout(request, userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 회원 비밀번호 변경
+     */
+    @Operation(summary = "회원 비밀번호 변경")
+    @PatchMapping("/info/password")
+    public ResponseEntity<Map<String, String>> updatePassword(@RequestBody @Valid UpdatePasswordRequest request,
+                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = memberService.updatePassword(request, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 닉네임 변경
+     */
+    @Operation(summary = "회원 닉네임 변경")
+    @PatchMapping("/info/nickname")
+    public ResponseEntity<Map<String, String>> updateNickname(@RequestBody @Valid UpdateNicknameRequest request,
+                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = memberService.updateNickname(request, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 프로필 이미지 변경
+     */
+    @Operation(summary = "회원 프로필 이미지 변경")
+    @PatchMapping("/info/profile")
+    public ResponseEntity<Map<String, String>> updateProfileImg(@RequestPart(value = "image") MultipartFile file,
+
+                                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Map<String, String> response = memberService.updateProfileImg(file, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 탈퇴
+     */
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/info")
+    public ResponseEntity<Map<String, String>> withdraw(@RequestBody @Valid WithdrawRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = memberService.withdraw(request, userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 정보 조회
+     */
+    @Operation(summary = "회원 정보 조회")
+    @GetMapping("/info")
+    public ResponseEntity<MemberDetailResponse> getMemberDetail(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        MemberDetailResponse response = memberService.getMemberDetail(userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
 }

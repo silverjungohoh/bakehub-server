@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.member.service;
 
 import com.project.snsserver.domain.member.model.dto.*;
+import com.project.snsserver.domain.member.model.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
@@ -46,4 +47,29 @@ public interface MemberService {
      * 회원 로그아웃
      */
     Map<String, String> logout(LogoutRequest request, String email);
+
+    /**
+     * 회원 비밀번호 수정
+     */
+    Map<String, String> updatePassword(UpdatePasswordRequest request, String email);
+
+    /**
+     * 회원 닉네임 수정
+     */
+    Map<String, String> updateNickname(UpdateNicknameRequest request, String email);
+
+    /**
+     * 회원 프로필 이미지 수정
+     */
+    Map<String, String> updateProfileImg(MultipartFile file, String email);
+
+    /**
+     * 회원 탈퇴
+     */
+    Map<String, String> withdraw(WithdrawRequest request, Member member);
+
+    /**
+     * 회원 정보 조회
+     */
+    MemberDetailResponse getMemberDetail(Member member);
 }

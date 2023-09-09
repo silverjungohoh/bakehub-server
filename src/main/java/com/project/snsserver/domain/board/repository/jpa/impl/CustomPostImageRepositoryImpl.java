@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.board.model.entity.QPostImage.postImage;
 import static com.querydsl.core.types.Projections.bean;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
 public class CustomPostImageRepositoryImpl implements CustomPostImageRepository {
@@ -35,5 +37,15 @@ public class CustomPostImageRepositoryImpl implements CustomPostImageRepository 
                 .from(postImage)
                 .where(postImage.post.id.eq(postId))
                 .fetch();
+    }
+
+    @Override
+    public Long deleteAllPostImageInPostIdsByMemberId(Long memberId) {
+        return queryFactory.delete(postImage)
+                .where(postImage.post.id.in(
+                                select(post.id).from(post).where(post.member.id.eq(memberId))
+                        )
+                )
+                .execute();
     }
 }

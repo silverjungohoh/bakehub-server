@@ -7,4 +7,6 @@ import org.springframework.data.domain.Slice;
 public interface CustomNotificationRepository {
 
     Slice<NotificationResponse> findNotificationAllByMemberId(Long memberId, Long lastNotificationId, Pageable pageable);
+
+    Long deleteNotificationAllByMemberId(Long memberId);
 }
