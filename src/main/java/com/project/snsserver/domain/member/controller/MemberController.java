@@ -136,4 +136,15 @@ public class MemberController {
         Map<String, String> response = memberService.updateNickname(request, userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 회원 탈퇴
+     */
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/info")
+    public ResponseEntity<Map<String, String>> withdraw(@RequestBody @Valid WithdrawRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Map<String, String> response = memberService.withdraw(request, userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
 }

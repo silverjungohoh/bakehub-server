@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.member.service;
 
 import com.project.snsserver.domain.member.model.dto.*;
+import com.project.snsserver.domain.member.model.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
@@ -56,4 +57,9 @@ public interface MemberService {
      * 회원 닉네임 수정
      */
     Map<String, String> updateNickname(UpdateNicknameRequest request, String email);
+
+    /**
+     * 회원 탈퇴
+     */
+    Map<String, String> withdraw(WithdrawRequest request, Member member);
 }
