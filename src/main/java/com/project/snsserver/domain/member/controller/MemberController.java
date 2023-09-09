@@ -138,6 +138,18 @@ public class MemberController {
     }
 
     /**
+     * 회원 프로필 이미지 변경
+     */
+    @Operation(summary = "회원 프로필 이미지 변경")
+    @PatchMapping("/info/profile")
+    public ResponseEntity<Map<String, String>> updateProfileImg(@RequestPart(value = "image") MultipartFile file,
+
+                                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Map<String, String> response = memberService.updateProfileImg(file, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * 회원 탈퇴
      */
     @Operation(summary = "회원 탈퇴")

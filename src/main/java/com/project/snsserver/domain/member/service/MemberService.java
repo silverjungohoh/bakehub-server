@@ -59,6 +59,11 @@ public interface MemberService {
     Map<String, String> updateNickname(UpdateNicknameRequest request, String email);
 
     /**
+     * 회원 프로필 이미지 수정
+     */
+    Map<String, String> updateProfileImg(MultipartFile file, String email);
+
+    /**
      * 회원 탈퇴
      */
     Map<String, String> withdraw(WithdrawRequest request, Member member);

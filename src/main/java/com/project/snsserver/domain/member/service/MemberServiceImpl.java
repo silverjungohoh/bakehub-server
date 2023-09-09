@@ -245,6 +245,20 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
+    public Map<String, String> updateProfileImg(MultipartFile file, String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        String newProfileImgUrl = awsS3Service.uploadFile(file, DIR);
+        awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
+
+        member.updateProfileImg(newProfileImgUrl);
+        return getMessage("프로필 이미지 변경이 완료되었습니다.");
+    }
+
+    @Override
+    @Transactional
     public Map<String, String> withdraw(WithdrawRequest request, Member member) {
 
         if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
