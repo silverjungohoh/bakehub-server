@@ -275,6 +275,12 @@ public class MemberServiceImpl implements MemberService {
         return getMessage("회원 탈퇴가 완료되었습니다.");
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public MemberDetailResponse getMemberDetail(Member member) {
+        return memberRepository.findMemberDetailByMemberId(member.getId());
+    }
+
 
     private static Map<String, String> getMessage(String message) {
         Map<String, String> result = new HashMap<>();

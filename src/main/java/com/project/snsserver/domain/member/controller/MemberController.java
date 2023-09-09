@@ -147,4 +147,15 @@ public class MemberController {
         Map<String, String> response = memberService.withdraw(request, userDetails.getMember());
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 회원 정보 조회
+     */
+    @Operation(summary = "회원 정보 조회")
+    @GetMapping("/info")
+    public ResponseEntity<MemberDetailResponse> getMemberDetail(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        MemberDetailResponse response = memberService.getMemberDetail(userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
 }
