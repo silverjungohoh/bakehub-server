@@ -9,4 +9,6 @@ public interface CustomPostImageRepository {
     Long deleteAllPostImageByPostId(Long postId);
 
     List<PostImageResponse> findAllPostImageByPostId(Long postId);
+
+    Long deleteAllPostImageInPostIdsByMemberId(Long memberId);
 }

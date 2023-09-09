@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import static com.project.snsserver.domain.board.model.entity.QComment.comment;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
 public class CustomCommentRepositoryImpl implements CustomCommentRepository {
@@ -49,6 +50,22 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
     public Long deleteCommentAllByPostId(Long postId) {
         return queryFactory.delete(comment)
                 .where(comment.post.id.eq(postId))
+                .execute();
+    }
+
+    @Override
+    public Long deleteCommentAllByMemberId(Long memberId) {
+        return queryFactory.delete(comment)
+                .where(comment.member.id.eq(memberId))
+                .execute();
+    }
+
+    public Long deleteCommentAllInPostIdsByMemberId(Long memberId) {
+        return queryFactory.delete(comment)
+                .where(comment.post.id.in(
+                                select(post.id).from(post).where(post.member.id.eq(memberId))
+                        )
+                )
                 .execute();
     }
 
