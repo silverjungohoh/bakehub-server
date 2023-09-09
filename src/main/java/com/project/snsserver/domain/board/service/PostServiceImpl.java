@@ -139,13 +139,14 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Map<String, String> deletePostImage(Long postId, Long postImageId) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+        if(!postRepository.existsById(postId)) {
+            throw new BoardException(POST_NOT_FOUND);
+        }
 
         PostImage postImage = postImageRepository.findById(postImageId)
                 .orElseThrow(() -> new BoardException(POST_IMAGE_NOT_FOUND));
 
-        post.deletePostImage(postImage);
+        postImageRepository.delete(postImage);
         awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR);
 
         return getMessage("이미지가 삭제되었습니다.");
