@@ -6,10 +6,7 @@ import com.project.snsserver.domain.board.model.dto.EditPostResponse;
 import com.project.snsserver.domain.board.model.dto.PostImageResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
-import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostRepository;
+import com.project.snsserver.domain.board.repository.jpa.*;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.error.exception.BoardException;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +44,9 @@ class PostServiceTest {
 
     @Mock
     private PostHeartRepository postHeartRepository;
+
+    @Mock
+    private PostHashtagRepository postHashtagRepository;
 
     @Mock
     private AwsS3Service awsS3Service;
@@ -200,6 +200,7 @@ class PostServiceTest {
         given(commentRepository.deleteCommentAllByPostId(anyLong())).willReturn(1L);
         given(postHeartRepository.deletePostHeartAllByPostId(anyLong())).willReturn(1L);
         given(postImageRepository.deleteAllPostImageByPostId(anyLong())).willReturn(1L);
+        given(postHashtagRepository.deletePostHashtagAllByPostId(anyLong())).willReturn(1L);
 
         ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
 
@@ -287,16 +288,12 @@ class PostServiceTest {
     @Test
     @DisplayName("이미지 삭제 성공")
     void deletePostImage_Success() {
-        Post post = Post.builder()
-                .title("제목")
-                .content("내용")
-                .build();
 
         PostImage postImage = PostImage.builder()
                 .postImageUrl("https://image-bucket.s3.abc.jpg")
                 .build();
 
-        given(postRepository.findById(anyLong())).willReturn(Optional.of(post));
+        given(postRepository.existsById(anyLong())).willReturn(true);
         given(postImageRepository.findById(anyLong())).willReturn(Optional.of(postImage));
 
         Map<String, String> response = postService.deletePostImage(1L, 1L);
@@ -308,7 +305,7 @@ class PostServiceTest {
     @DisplayName("이미지 삭제 실패1")
     void deletePostImage_Fail1() {
 
-        given(postRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(postRepository.existsById(anyLong())).willReturn(false);
 
         BoardException exception  = assertThrows(BoardException.class,
                 () -> postService.deletePostImage(1L, 1L));
@@ -321,12 +318,7 @@ class PostServiceTest {
     @DisplayName("이미지 삭제 실패2")
     void deletePostImage_Fail2() {
 
-        Post post = Post.builder()
-                .title("제목")
-                .content("내용")
-                .build();
-
-        given(postRepository.findById(anyLong())).willReturn(Optional.of(post));
+        given(postRepository.existsById(anyLong())).willReturn(true);
         given(postImageRepository.findById(anyLong())).willReturn(Optional.empty());
 
         BoardException exception  = assertThrows(BoardException.class,
