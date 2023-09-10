@@ -35,7 +35,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
-        ErrorResponse<String> errorResponse = ErrorResponse.<String>builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(FAIL_TO_AUTHENTICATION.getStatus().value())
                 .code(FAIL_TO_AUTHENTICATION.getCode())
                 .message(FAIL_TO_AUTHENTICATION.getMessage())

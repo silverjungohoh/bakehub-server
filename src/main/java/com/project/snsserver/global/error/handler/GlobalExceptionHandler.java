@@ -6,14 +6,12 @@ import com.project.snsserver.global.error.exception.MemberException;
 import com.project.snsserver.global.error.model.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 import static com.project.snsserver.global.error.type.ErrorCode.INVALID_ARGUMENT;
 import static com.project.snsserver.global.error.type.ImageErrorCode.EXCEEDED_IMAGE_SIZE_LIMIT;
@@ -23,9 +21,9 @@ import static com.project.snsserver.global.error.type.ImageErrorCode.EXCEEDED_IM
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MemberException.class)
-    public ResponseEntity<ErrorResponse<String>> handleMemberException(MemberException e) {
+    public ResponseEntity<ErrorResponse> handleMemberException(MemberException e) {
 
-        ErrorResponse<String> response = ErrorResponse.<String>builder()
+        ErrorResponse response = ErrorResponse.builder()
                 .status(e.getErrorCode().getStatus().value())
                 .code(e.getErrorCode().getCode())
                 .message(e.getErrorCode().getMessage())
@@ -35,9 +33,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ImageException.class)
-    public ResponseEntity<ErrorResponse<String>> handleImageException(ImageException e) {
+    public ResponseEntity<ErrorResponse> handleImageException(ImageException e) {
 
-        ErrorResponse<String> response = ErrorResponse.<String>builder()
+        ErrorResponse response = ErrorResponse.builder()
                 .status(e.getErrorCode().getStatus().value())
                 .code(e.getErrorCode().getCode())
                 .message(e.getErrorCode().getMessage())
@@ -47,26 +45,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse<Map<String,String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
-        Map<String, String> fieldError = new HashMap<>();
-        for(FieldError error : e.getFieldErrors()) {
-            fieldError.put(error.getField(), error.getDefaultMessage());
-        }
-
-        ErrorResponse<Map<String,String>> response = ErrorResponse.<Map<String,String>>builder()
+        ErrorResponse response = ErrorResponse.builder()
                 .status(INVALID_ARGUMENT.getStatus().value())
                 .code(INVALID_ARGUMENT.getCode())
-                .message(fieldError)
+                .message(Objects.requireNonNull(e.getFieldError()).getDefaultMessage())
                 .build();
 
         return ResponseEntity.status(INVALID_ARGUMENT.getStatus()).body(response);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponse<String>> handleMaxUploadSizeExceededException() {
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException() {
 
-        ErrorResponse<String> response = ErrorResponse.<String>builder()
+        ErrorResponse response = ErrorResponse.builder()
                 .status(EXCEEDED_IMAGE_SIZE_LIMIT.getStatus().value())
                 .code(EXCEEDED_IMAGE_SIZE_LIMIT.getCode())
                 .message(EXCEEDED_IMAGE_SIZE_LIMIT.getMessage())
@@ -76,9 +69,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BoardException.class)
-    public ResponseEntity<ErrorResponse<String>> handleBoardException(BoardException e) {
+    public ResponseEntity<ErrorResponse> handleBoardException(BoardException e) {
 
-        ErrorResponse<String> response = ErrorResponse.<String>builder()
+        ErrorResponse response = ErrorResponse.builder()
                 .status(e.getErrorCode().getStatus().value())
                 .code(e.getErrorCode().getCode())
                 .message(e.getErrorCode().getMessage())

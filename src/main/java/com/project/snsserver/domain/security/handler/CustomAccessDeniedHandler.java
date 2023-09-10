@@ -36,7 +36,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.FORBIDDEN.value());
 
-        ErrorResponse<String> errorResponse = ErrorResponse.<String>builder()
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(FAIL_TO_AUTHORIZATION.getStatus().value())
                 .code(FAIL_TO_AUTHORIZATION.getCode())
                 .message(FAIL_TO_AUTHORIZATION.getMessage())
