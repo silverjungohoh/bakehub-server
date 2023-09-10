@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.project.snsserver.global.error.type.BoardErrorCode.*;
 
@@ -83,13 +82,19 @@ public class PostServiceImpl implements PostService {
             throw new BoardException(FAIL_TO_UPDATE_POST);
         }
 
+        // 해당 게시물의 모든 해시태그 삭제 후 입력 받은 해시태그 생성
+        postHashtagRepository.deletePostHashtagAllByPostId(post.getId());
+
+        if(!Objects.isNull(request.getTagNames())) {
+            postHashtagService.createPostHashtag(post, request.getTagNames());
+        }
+
         post.update(request.getTitle(), request.getContent());
 
-        List<PostImageResponse> postImgResponse = post.getPostImages()
-                .stream().map(PostImageResponse :: fromEntity)
-                .collect(Collectors.toList());
+        List<PostImageResponse> postImageResponse
+                = postImageRepository.findAllPostImageByPostId(post.getId());
 
-        return EditPostResponse.fromEntity(post, postImgResponse);
+        return EditPostResponse.fromEntity(post, postImageResponse);
     }
 
     @Override
