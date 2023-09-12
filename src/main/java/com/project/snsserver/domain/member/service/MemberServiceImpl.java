@@ -295,6 +295,11 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findMemberDetailByMemberId(member.getId());
     }
 
+    @Override
+    public ProfileResponse getMemberProfile(Member member) {
+        return ProfileResponse.fromEntity(member);
+    }
+
 
     private static Map<String, String> getMessage(String message) {
         Map<String, String> result = new HashMap<>();

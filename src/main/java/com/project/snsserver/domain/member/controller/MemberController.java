@@ -170,4 +170,15 @@ public class MemberController {
         MemberDetailResponse response = memberService.getMemberDetail(userDetails.getMember());
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 회원 프로필 조회
+     */
+    @Operation(summary = "회원 프로필 조회")
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileResponse> getMemberProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        ProfileResponse response = memberService.getMemberProfile(userDetails.getMember());
+        return ResponseEntity.ok(response);
+    }
 }
