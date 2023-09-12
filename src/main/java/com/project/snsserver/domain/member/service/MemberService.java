@@ -72,4 +72,9 @@ public interface MemberService {
      * 회원 정보 조회
      */
     MemberDetailResponse getMemberDetail(Member member);
+
+    /**
+     * 회원 프로필 조회
+     */
+    ProfileResponse getMemberProfile(Member member);
 }
