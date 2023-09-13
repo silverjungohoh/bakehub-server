@@ -220,11 +220,15 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() ->  new MemberException(MEMBER_NOT_FOUND));
 
-        if(!Objects.equals(request.getPassword(), request.getPasswordCheck())) {
+        if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new MemberException(INCORRECT_NOW_PASSWORD);
+        }
+
+        if(!Objects.equals(request.getNewPassword(), request.getPasswordCheck())) {
             throw new MemberException(INCORRECT_PASSWORD_CHECK);
         }
 
-        member.updatePassword(passwordEncoder.encode(request.getPassword()));
+        member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
         return getMessage("비밀번호 변경이 완료되었습니다.");
     }
 
