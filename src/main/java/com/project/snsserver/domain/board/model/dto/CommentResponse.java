@@ -1,13 +1,10 @@
 package com.project.snsserver.domain.board.model.dto;
 
-import com.project.snsserver.domain.board.model.entity.Comment;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor
@@ -21,13 +18,4 @@ public class CommentResponse {
     private String nickname;
 
     private LocalDateTime createdAt;
-
-    public static CommentResponse fromEntity(Comment comment) {
-        return CommentResponse.builder()
-                .commentId(comment.getId())
-                .content(comment.getContent())
-                .nickname(comment.getMember().getNickname())
-                .createdAt(comment.getCreatedAt())
-                .build();
-    }
 }

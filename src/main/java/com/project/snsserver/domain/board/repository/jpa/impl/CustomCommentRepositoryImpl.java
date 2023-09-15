@@ -1,7 +1,6 @@
 package com.project.snsserver.domain.board.repository.jpa.impl;
 
 import com.project.snsserver.domain.board.model.dto.CommentResponse;
-import com.project.snsserver.domain.board.model.entity.Comment;
 import com.project.snsserver.domain.board.repository.jpa.CustomCommentRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -11,11 +10,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.project.snsserver.domain.board.model.entity.QComment.comment;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
+import static com.querydsl.core.types.Projections.bean;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
@@ -29,13 +28,19 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
      */
     @Override
     public Slice<CommentResponse> findCommentAllByPostId(Long postId, Long lastCommentId, Pageable pageable) {
-        List<Comment> comments = queryFactory.selectFrom(comment)
-                .leftJoin(comment.post, post).fetchJoin()
-                .leftJoin(comment.member, member).fetchJoin()
-                .where(
-                        lastCommentId(lastCommentId),
-                        comment.post.id.eq(postId)
+
+        List<CommentResponse> comments = queryFactory.select(
+                        bean(CommentResponse.class,
+                                comment.id.as("commentId"),
+                                comment.content.as("content"),
+                                member.nickname.as("nickname"),
+                                comment.createdAt.as("createdAt")
+                        )
                 )
+                .from(comment)
+                .leftJoin(comment.post, post)
+                .leftJoin(comment.member, member)
+                .where(lastCommentId(lastCommentId), comment.post.id.eq(postId))
                 .orderBy(comment.createdAt.desc())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -76,7 +81,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
         return comment.id.lt(lastCommentId);
     }
 
-    private Slice<CommentResponse> checkLastPage(Pageable pageable, List<Comment> comments) {
+    private Slice<CommentResponse> checkLastPage(Pageable pageable, List<CommentResponse> comments) {
         boolean hasNext = false;
 
         // 조회한 댓글의 개수가 요청한 페이지 사이즈보다 크면 뒤에 더 있음
@@ -85,11 +90,6 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
             comments.remove(pageable.getPageSize());
         }
 
-        List<CommentResponse> commentsByPost
-                = comments.stream()
-                .map(CommentResponse::fromEntity)
-                .collect(Collectors.toList());
-
-        return new SliceImpl<>(commentsByPost, pageable, hasNext);
+        return new SliceImpl<>(comments, pageable, hasNext);
     }
 }
