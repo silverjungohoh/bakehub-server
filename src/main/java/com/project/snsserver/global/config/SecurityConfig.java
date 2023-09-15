@@ -44,7 +44,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.httpBasic().disable()
-                .csrf().disable();
+                .csrf().disable()
+                .cors();
 
         http.formLogin().disable();
         http.logout().disable();
@@ -56,8 +57,8 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/swagger-ui/**", "/h2-console/**", "/api-docs/**",
-                        "/api/v1/members/sign-up", "/api/v1/members/auth/**",
-                        "/api/v1/members/duplicate/**").permitAll()
+                        "/api/v1/members/sign-up", "/api/v1/members/auth/**", "/api/v1/members/send/email",
+                        "/api/v1/members/verify/email", "/api/v1/members/duplicate/**").permitAll()
                 .antMatchers("/api/v1/admin/**").hasAuthority(ADMIN.getValue())
                 .anyRequest().authenticated();
 
