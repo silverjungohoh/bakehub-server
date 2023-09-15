@@ -12,6 +12,7 @@ import org.springframework.data.domain.SliceImpl;
 import java.util.List;
 
 import static com.project.snsserver.domain.board.model.entity.QComment.comment;
+import static com.project.snsserver.domain.board.model.entity.QHashtag.hashtag;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.board.model.entity.QPostHashtag.postHashtag;
 import static com.project.snsserver.domain.board.model.entity.QPostHeart.postHeart;
@@ -104,7 +105,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                 .from(postHashtag)
                 .leftJoin(postHashtag.post, post)
                 .leftJoin(postHashtag.post.member, member)
-                .where(lastPostId(lastPostId), postHashtag.hashtag.name.eq(name))
+                .leftJoin(postHashtag.hashtag, hashtag)
+                .where(lastPostId(lastPostId), hashtag.name.eq(name))
                 .limit(pageable.getPageSize() + 1)
                 .orderBy(post.createdAt.desc())
                 .fetch();
