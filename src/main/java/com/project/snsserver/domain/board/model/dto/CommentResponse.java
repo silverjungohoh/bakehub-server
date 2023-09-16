@@ -17,5 +17,7 @@ public class CommentResponse {
 
     private String nickname;
 
+    private Boolean isWriter; // 작성자 여부
+
     private LocalDateTime createdAt;
 }

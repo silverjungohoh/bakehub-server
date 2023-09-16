@@ -15,6 +15,7 @@ import static com.project.snsserver.domain.board.model.entity.QComment.comment;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
 import static com.querydsl.core.types.Projections.bean;
+import static com.querydsl.core.types.dsl.Expressions.asBoolean;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
@@ -27,13 +28,14 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
      * 특정 게시물의 댓글 조회
      */
     @Override
-    public Slice<CommentResponse> findCommentAllByPostId(Long postId, Long lastCommentId, Pageable pageable) {
+    public Slice<CommentResponse> findCommentAllByPostId(Long postId, Long lastCommentId, String email, Pageable pageable) {
 
         List<CommentResponse> comments = queryFactory.select(
                         bean(CommentResponse.class,
                                 comment.id.as("commentId"),
                                 comment.content.as("content"),
                                 member.nickname.as("nickname"),
+                                asBoolean(member.email.eq(email)).as("isWriter"),
                                 comment.createdAt.as("createdAt")
                         )
                 )

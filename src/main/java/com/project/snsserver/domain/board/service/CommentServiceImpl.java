@@ -99,12 +99,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<CommentResponse> getCommentsByPost(Long postId, Long lastCommentId, Pageable pageable) {
+    public Slice<CommentResponse> getCommentsByPost(Long postId, Long lastCommentId, String email, Pageable pageable) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        return commentRepository.findCommentAllByPostId(post.getId(), lastCommentId, pageable);
+        return commentRepository.findCommentAllByPostId(post.getId(), lastCommentId, email, pageable);
     }
 
     private static Map<String, String> getMessage(String message) {
