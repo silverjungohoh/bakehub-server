@@ -44,7 +44,7 @@ public interface PostService {
     /**
      * 게시물 상세 조회
      */
-    PostDetailResponse getPostDetail(Long postId);
+    PostDetailResponse getPostDetail(Long postId, Long memberId);
 
     /**
      * 게시물의 해시태그 목록 조회

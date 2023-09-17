@@ -104,9 +104,10 @@ public class PostController {
      */
     @Operation(summary = "글 상세 조회")
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId) {
+    public ResponseEntity<PostDetailResponse> getPostDetail(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                            @PathVariable Long postId) {
 
-        PostDetailResponse response = postService.getPostDetail(postId);
+        PostDetailResponse response = postService.getPostDetail(postId, userDetails.getMember().getId());
         return ResponseEntity.ok(response);
     }
 

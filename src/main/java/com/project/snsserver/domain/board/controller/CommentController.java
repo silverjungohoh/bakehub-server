@@ -72,10 +72,11 @@ public class CommentController {
     @GetMapping("/{postId}/comments")
     public ResponseEntity<Slice<CommentResponse>> getCommentsByPost(@PathVariable Long postId,
                                                @RequestParam(required = false) Long lastCommentId,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails,
                                                @PageableDefault Pageable pageable) {
 
         Slice<CommentResponse> response
-                = commentService.getCommentsByPost(postId, lastCommentId, pageable);
+                = commentService.getCommentsByPost(postId, lastCommentId, userDetails.getUsername(),  pageable);
         return ResponseEntity.ok(response);
     }
 }

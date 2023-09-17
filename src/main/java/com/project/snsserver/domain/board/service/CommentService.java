@@ -29,5 +29,5 @@ public interface CommentService {
     /**
      * 게시물 댓글 조회
      */
-    Slice<CommentResponse> getCommentsByPost(Long postId, Long lastCommentId, Pageable pageable);
+    Slice<CommentResponse> getCommentsByPost(Long postId, Long lastCommentId, String email, Pageable pageable);
 }

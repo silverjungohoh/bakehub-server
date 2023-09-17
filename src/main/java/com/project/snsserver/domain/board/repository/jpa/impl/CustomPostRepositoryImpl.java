@@ -1,5 +1,6 @@
 package com.project.snsserver.domain.board.repository.jpa.impl;
 
+import com.project.snsserver.domain.board.model.dto.PostDetailResponse;
 import com.project.snsserver.domain.board.model.dto.PostResponse;
 import com.project.snsserver.domain.board.repository.jpa.CustomPostRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -12,12 +13,14 @@ import org.springframework.data.domain.SliceImpl;
 import java.util.List;
 
 import static com.project.snsserver.domain.board.model.entity.QComment.comment;
+import static com.project.snsserver.domain.board.model.entity.QHashtag.hashtag;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.board.model.entity.QPostHashtag.postHashtag;
 import static com.project.snsserver.domain.board.model.entity.QPostHeart.postHeart;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
 import static com.querydsl.core.types.ExpressionUtils.as;
 import static com.querydsl.core.types.Projections.bean;
+import static com.querydsl.core.types.dsl.Expressions.asBoolean;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
@@ -36,20 +39,18 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                                 post.content.as("content"),
                                 member.nickname.as("nickname"),
                                 post.createdAt.as("createdAt"),
-                                comment.id.count().as("commentCnt"),
-                                as(
-                                        select(postHeart.id.count())
-                                                .from(postHeart)
+                                as(select(comment.id.count()).from(comment)
+                                                .where(comment.post.id.eq(post.id)),
+                                        "commentCnt"),
+                                as(select(postHeart.id.count()).from(postHeart)
                                                 .where(postHeart.post.id.eq(post.id)),
                                         "heartCnt"
                                 )
                         )
                 )
                 .from(post)
-                .leftJoin(post.comments, comment)
                 .leftJoin(post.member, member)
                 .where(lastPostId(lastPostId))
-                .groupBy(post)
                 .limit(pageable.getPageSize() + 1)
                 .orderBy(post.createdAt.desc())
                 .fetch();
@@ -57,28 +58,32 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
     }
 
     @Override
-    public PostResponse findPostByPostId(Long postId) {
-
+    public PostDetailResponse findPostByPostId(Long postId, Long memberId) {
         return queryFactory
                 .select(
-                        bean(PostResponse.class,
+                        bean(PostDetailResponse.class,
                                 post.id.as("postId"),
                                 post.title.as("title"),
                                 post.content.as("content"),
                                 member.nickname.as("nickname"),
                                 post.createdAt.as("createdAt"),
-                                comment.id.count().as("commentCnt"),
-                                as(
-                                        select(postHeart.id.count())
+                                as(asBoolean(select(postHeart.id.count())
+                                        .from(postHeart)
+                                        .where(postHeart.post.id.eq(postId),
+                                                postHeart.member.id.eq(memberId)
+                                        ).eq(1L)), "hasHeart"),
+                                as(select(comment.id.count())
+                                                .from(comment)
+                                                .where(comment.post.id.eq(postId)),
+                                        "commentCnt"),
+                                as(select(postHeart.id.count())
                                                 .from(postHeart)
-                                                .where(postHeart.post.id.eq(post.id)),
-                                        "heartCnt"
-                                )
+                                                .where(postHeart.post.id.eq(postId)),
+                                        "heartCnt")
                         )
                 )
                 .from(post)
                 .leftJoin(post.member, member)
-                .leftJoin(post.comments, comment)
                 .where(post.id.eq(postId))
                 .fetchOne();
     }
@@ -104,7 +109,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                 .from(postHashtag)
                 .leftJoin(postHashtag.post, post)
                 .leftJoin(postHashtag.post.member, member)
-                .where(lastPostId(lastPostId), postHashtag.hashtag.name.eq(name))
+                .leftJoin(postHashtag.hashtag, hashtag)
+                .where(lastPostId(lastPostId), hashtag.name.eq(name))
                 .limit(pageable.getPageSize() + 1)
                 .orderBy(post.createdAt.desc())
                 .fetch();
