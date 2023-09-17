@@ -22,22 +22,16 @@ public class PostDetailResponse {
 
     private List<PostImageResponse> postImages;
 
+    private Boolean hasHeart; // 좋아요 여부
+
     private Long commentCnt;
 
     private Long heartCnt;
 
     private LocalDateTime createdAt;
 
-    public static PostDetailResponse from (PostResponse post, List<PostImageResponse> images) {
-        return PostDetailResponse.builder()
-                .postId(post.getPostId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .nickname(post.getNickname())
-                .createdAt(post.getCreatedAt())
-                .commentCnt(post.getCommentCnt())
-                .heartCnt(post.getHeartCnt())
-                .postImages(images)
-                .build();
+
+    public void setPostImages(List<PostImageResponse> postImages) {
+        this.postImages = postImages;
     }
 }

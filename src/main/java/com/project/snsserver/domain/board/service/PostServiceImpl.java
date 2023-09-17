@@ -165,18 +165,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public PostDetailResponse getPostDetail(Long postId) {
+    public PostDetailResponse getPostDetail(Long postId, Long memberId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        PostResponse postResponse
-                = postRepository.findPostByPostId(post.getId());
+        PostDetailResponse postDetailResponse
+                = postRepository.findPostByPostId(post.getId(), memberId);
 
         List<PostImageResponse> postImageResponse
                 = postImageRepository.findAllPostImageByPostId(post.getId());
 
-        return PostDetailResponse.from(postResponse, postImageResponse);
+        postDetailResponse.setPostImages(postImageResponse);
+        return postDetailResponse;
     }
 
     @Override
