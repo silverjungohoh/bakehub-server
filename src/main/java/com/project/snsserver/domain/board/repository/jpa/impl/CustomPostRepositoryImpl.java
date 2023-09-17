@@ -39,20 +39,18 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                                 post.content.as("content"),
                                 member.nickname.as("nickname"),
                                 post.createdAt.as("createdAt"),
-                                comment.id.count().as("commentCnt"),
-                                as(
-                                        select(postHeart.id.count())
-                                                .from(postHeart)
+                                as(select(comment.id.count()).from(comment)
+                                                .where(comment.post.id.eq(post.id)),
+                                        "commentCnt"),
+                                as(select(postHeart.id.count()).from(postHeart)
                                                 .where(postHeart.post.id.eq(post.id)),
                                         "heartCnt"
                                 )
                         )
                 )
                 .from(post)
-                .leftJoin(post.comments, comment)
                 .leftJoin(post.member, member)
                 .where(lastPostId(lastPostId))
-                .groupBy(post)
                 .limit(pageable.getPageSize() + 1)
                 .orderBy(post.createdAt.desc())
                 .fetch();
