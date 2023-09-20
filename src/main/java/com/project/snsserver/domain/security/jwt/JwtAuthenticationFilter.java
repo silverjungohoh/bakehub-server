@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * access token 유효한지 검증
+ * token 유효한지 검증
  * 검증 성공 시 Security Context에 Authentication 객체 저장
  */
 
@@ -26,9 +26,11 @@ import java.util.Objects;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String[] EXCLUDED_URL
-            = {"/api/v1/members/sign-up", "/api/v1/members/auth/login", "/api/v1/members/auth/token",
+            = {"/api/v1/members/sign-up", "/api/v1/members/auth/login",
             "/api/v1/members/duplicate/email", "/api/v1/members/duplicate/nickname",
+            "/api/v1/members/send/email", "/api/v1/members/verify/email",
             "/h2-console", "/swagger-ui", "/api-docs"};
+    private static final String REISSUE_TOKEN_URL = "/api/v1/members/auth/token";
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -43,16 +45,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // header에서 access token 추출
-        log.info("resolve access token from header");
-        String token = jwtTokenProvider.resolveToken(request);
-        // access token 유효성 검증
-        if (!Objects.isNull(token) && jwtTokenProvider.validateAccessToken(token)) {
-            log.info("access token is valid");
+        String token;
+
+        // token 재발급 요청인 경우
+        if(request.getRequestURI().startsWith(REISSUE_TOKEN_URL)) {
+            log.info("resolve refresh token from header");
+            // header에서 refresh token 추출
+            token = request.getHeader("RTK");
+        } else {
+            // header에서 access token 추출
+            log.info("resolve access token from header");
+            token = jwtTokenProvider.resolveAccessToken(request);
+        }
+
+        // token 유효성 검증
+        if (!Objects.isNull(token) && jwtTokenProvider.validateToken(token)) {
+            log.info("token is valid");
 
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
+            log.info("save authentication object in SecurityContext");
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         filterChain.doFilter(request, response);
     }
 }
