@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class ReissueTokenResponse {
 
     private String accessToken;
+
+    private String refreshToken;
 }
