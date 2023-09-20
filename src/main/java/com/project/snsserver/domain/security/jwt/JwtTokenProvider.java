@@ -111,7 +111,7 @@ public class JwtTokenProvider {
     /**
      * request header에서 access token 추출
      */
-    public String resolveToken(HttpServletRequest request) {
+    public String resolveAccessToken(HttpServletRequest request) {
         String headerAuth = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(BEARER_PREFIX)) {
             return headerAuth.substring(BEARER_PREFIX.length());
@@ -120,21 +120,10 @@ public class JwtTokenProvider {
     }
 
     /**
-     * access token 유효성 검증
+     * token 유효성 검증
      */
-    public boolean validateAccessToken(String token) {
+    public boolean validateToken(String token) {
         return !extractClaims(token).getExpiration().before(new Date());
-    }
-
-    /**
-     * refresh token 유효성 검증
-     */
-    public boolean validateRefreshToken(String token) {
-        try {
-            return !extractClaims(token).getExpiration().before(new Date());
-        } catch (CustomJwtException e) {
-            return false;
-        }
     }
 
     /**
