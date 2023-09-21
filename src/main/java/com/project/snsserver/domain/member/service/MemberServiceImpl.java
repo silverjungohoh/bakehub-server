@@ -20,6 +20,7 @@ import com.project.snsserver.domain.security.CustomUserDetails;
 import com.project.snsserver.domain.security.jwt.JwtTokenProvider;
 import com.project.snsserver.global.error.exception.MemberException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -36,6 +37,7 @@ import java.util.Objects;
 
 import static com.project.snsserver.global.error.type.MemberErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -165,30 +167,22 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public ReissueTokenResponse reissueAccessToken(ReissueTokenRequest request) {
-        String token = request.getRefreshToken();
+    public ReissueTokenResponse reissueAccessToken(String refreshToken, Member member) {
 
-        // refresh token 유효성 확인
-        if(!jwtTokenProvider.validateRefreshToken(token)) {
-            throw new MemberException(INVALID_REFRESH_TOKEN);
+        RefreshToken refreshTokenInRedis = refreshTokenRepository.findById(member.getEmail())
+                .orElseThrow(() -> new MemberException(FAIL_TO_REISSUE_TOKEN));
+
+        if(!Objects.equals(refreshTokenInRedis.getRefreshToken(), refreshToken)) {
+            log.error("rtk in redis and rtk in request header are not equal");
+            throw new MemberException(FAIL_TO_REISSUE_TOKEN);
         }
 
-        String email = jwtTokenProvider.extractUsername(token);
-
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-        RefreshToken refreshToken = refreshTokenRepository.findById(email)
-                .orElseThrow(() -> new MemberException(INVALID_REFRESH_TOKEN));
-
-        if(!Objects.equals(refreshToken.getRefreshToken(), token)) {
-            throw new MemberException(INVALID_REFRESH_TOKEN);
-        }
-
-        String accessToken = jwtTokenProvider.generateAccessToken(email, member.getRole().name());
+        String newAccessToken = jwtTokenProvider.generateAccessToken(member.getEmail(), member.getRole().name());
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(member.getEmail());
 
         return ReissueTokenResponse.builder()
-                .accessToken(accessToken)
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
                 .build();
     }
 

@@ -91,13 +91,14 @@ public class MemberController {
     }
 
     /**
-     * access token 재발급
+     * token 재발급
      */
-    @Operation(summary = "회원 access token 재발급")
+    @Operation(summary = "회원 token 재발급")
     @PostMapping("/auth/token")
-    public ResponseEntity<ReissueTokenResponse> reissueAccessToken(@RequestBody ReissueTokenRequest request) {
+    public ResponseEntity<ReissueTokenResponse> reissueAccessToken(@RequestHeader("RTK") String refreshToken,
+                                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        ReissueTokenResponse response = memberService.reissueAccessToken(request);
+        ReissueTokenResponse response = memberService.reissueAccessToken(refreshToken, userDetails.getMember());
         return ResponseEntity.ok(response);
     }
 

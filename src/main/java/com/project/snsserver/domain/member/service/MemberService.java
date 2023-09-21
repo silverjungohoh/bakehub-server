@@ -39,9 +39,9 @@ public interface MemberService {
     LoginResponse login(LoginRequest request);
 
     /**
-     * access token 재발급
+     * token 재발급
      */
-    ReissueTokenResponse reissueAccessToken(ReissueTokenRequest request);
+    ReissueTokenResponse reissueAccessToken(String refreshToken, Member member);
 
     /**
      * 회원 로그아웃
