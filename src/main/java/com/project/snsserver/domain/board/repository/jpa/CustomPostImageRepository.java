@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface CustomPostImageRepository {
 
-    Long deleteAllPostImageByPostId(Long postId);
+	Long deleteAllPostImageByPostId(Long postId);
 
-    List<PostImageResponse> findAllPostImageByPostId(Long postId);
+	List<PostImageResponse> findAllPostImageByPostId(Long postId);
 
-    Long deleteAllPostImageInPostIdsByMemberId(Long memberId);
+	Long deleteAllPostImageInPostIdsByMemberId(Long memberId);
 }

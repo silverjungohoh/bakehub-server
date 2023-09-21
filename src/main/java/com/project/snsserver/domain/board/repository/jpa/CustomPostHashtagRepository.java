@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface CustomPostHashtagRepository {
 
-    List<PostHashtagResponse> findAllPostHashtagByPostId(Long postId);
+	List<PostHashtagResponse> findAllPostHashtagByPostId(Long postId);
 
-    Long deletePostHashtagAllByPostId(Long postId);
+	Long deletePostHashtagAllByPostId(Long postId);
 
-    Long deletePostHashtagAllInPostIdsByMemberId(Long memberId);
+	Long deletePostHashtagAllInPostIdsByMemberId(Long memberId);
 }

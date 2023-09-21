@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.member.model.dto;
 
 import com.project.snsserver.domain.member.model.entity.Member;
+
 import lombok.*;
 
 @Getter
@@ -10,14 +11,14 @@ import lombok.*;
 @NoArgsConstructor
 public class ProfileResponse {
 
-    private String profileImgUrl;
+	private String profileImgUrl;
 
-    private String nickname;
+	private String nickname;
 
-    public static ProfileResponse fromEntity(Member member) {
-        return ProfileResponse.builder()
-                .profileImgUrl(member.getProfileImgUrl())
-                .nickname(member.getNickname())
-                .build();
-    }
+	public static ProfileResponse fromEntity(Member member) {
+		return ProfileResponse.builder()
+			.profileImgUrl(member.getProfileImgUrl())
+			.nickname(member.getNickname())
+			.build();
+	}
 }

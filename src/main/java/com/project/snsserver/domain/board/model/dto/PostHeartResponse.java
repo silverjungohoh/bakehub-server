@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PostHeartResponse {
 
-    private Long postId;
+	private Long postId;
 
-    private Long postHeartCount;
+	private Long postHeartCount;
 
-    public static PostHeartResponse from (Long id, Long count) {
-        return PostHeartResponse.builder()
-                .postId(id)
-                .postHeartCount(count)
-                .build();
-    }
+	public static PostHeartResponse from(Long id, Long count) {
+		return PostHeartResponse.builder()
+			.postId(id)
+			.postHeartCount(count)
+			.build();
+	}
 }

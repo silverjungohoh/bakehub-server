@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.board.model.dto;
 
 import com.project.snsserver.domain.board.model.entity.Comment;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,20 +15,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class EditCommentResponse {
 
-    private Long commentId;
+	private Long commentId;
 
-    private String content;
+	private String content;
 
-    private String nickname;
+	private String nickname;
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-    public static EditCommentResponse fromEntity(Comment comment) {
-        return EditCommentResponse.builder()
-                .commentId(comment.getId())
-                .content(comment.getContent())
-                .nickname(comment.getMember().getNickname())
-                .createdAt(comment.getCreatedAt())
-                .build();
-    }
+	public static EditCommentResponse fromEntity(Comment comment) {
+		return EditCommentResponse.builder()
+			.commentId(comment.getId())
+			.content(comment.getContent())
+			.nickname(comment.getMember().getNickname())
+			.createdAt(comment.getCreatedAt())
+			.build();
+	}
 }

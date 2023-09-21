@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.member.model.dto;
 
 import com.project.snsserver.domain.member.model.entity.Member;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,14 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpResponse {
 
-    private String nickname;
+	private String nickname;
 
-    private String profileImgUrl;
+	private String profileImgUrl;
 
-    public static SignUpResponse fromEntity(Member member) {
-        return SignUpResponse.builder()
-                .nickname(member.getNickname())
-                .profileImgUrl(member.getProfileImgUrl())
-                .build();
-    }
+	public static SignUpResponse fromEntity(Member member) {
+		return SignUpResponse.builder()
+			.nickname(member.getNickname())
+			.profileImgUrl(member.getProfileImgUrl())
+			.build();
+	}
 }

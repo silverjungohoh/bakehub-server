@@ -6,15 +6,15 @@ import java.util.Objects;
 
 public enum Gender {
 
-    MALE, FEMALE;
+	MALE, FEMALE;
 
-    @JsonCreator
-    public static Gender from (String gender) {
-        for(Gender g : Gender.values()) {
-            if(Objects.equals(g.name(), gender.toUpperCase())) {
-                return g;
-            }
-        }
-        return null;
-    }
+	@JsonCreator
+	public static Gender from(String gender) {
+		for (Gender g : Gender.values()) {
+			if (Objects.equals(g.name(), gender.toUpperCase())) {
+				return g;
+			}
+		}
+		return null;
+	}
 }

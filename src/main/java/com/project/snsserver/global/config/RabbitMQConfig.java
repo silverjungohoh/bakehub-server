@@ -18,57 +18,57 @@ import org.springframework.context.annotation.Configuration;
 @EnableRabbit
 public class RabbitMQConfig {
 
-    @Value("${spring.rabbitmq.host}")
-    private String host;
+	@Value("${spring.rabbitmq.host}")
+	private String host;
 
-    @Value("${spring.rabbitmq.username}")
-    private String username;
+	@Value("${spring.rabbitmq.username}")
+	private String username;
 
-    @Value("${spring.rabbitmq.password}")
-    private String password;
+	@Value("${spring.rabbitmq.password}")
+	private String password;
 
-    private static final String QUEUE_NAME = "notification.queue";
-    private static final String EXCHANGE_NAME = "notification.exchange";
-    private static final String ROUTING_KEY = "notification.key";
+	private static final String QUEUE_NAME = "notification.queue";
+	private static final String EXCHANGE_NAME = "notification.exchange";
+	private static final String ROUTING_KEY = "notification.key";
 
-    // Exchange 등록
-    @Bean
-    public TopicExchange directionExchange() {
-        return new TopicExchange(EXCHANGE_NAME);
-    }
+	// Exchange 등록
+	@Bean
+	public TopicExchange directionExchange() {
+		return new TopicExchange(EXCHANGE_NAME);
+	}
 
-    // Queue 등록
-    @Bean
-    public Queue queue() {
-        return new Queue(QUEUE_NAME);
-    }
+	// Queue 등록
+	@Bean
+	public Queue queue() {
+		return new Queue(QUEUE_NAME);
+	}
 
-    // Exchange & Queue 바인딩
-    @Bean
-    public Binding binding(TopicExchange topicExchange, Queue queue) {
-        return BindingBuilder.bind(queue).to(topicExchange).with(ROUTING_KEY);
-    }
+	// Exchange & Queue 바인딩
+	@Bean
+	public Binding binding(TopicExchange topicExchange, Queue queue) {
+		return BindingBuilder.bind(queue).to(topicExchange).with(ROUTING_KEY);
+	}
 
-    // 스프링에서 자동으로 생성되는 ConnectionFactory = SimpleConnectionFactory
-    // CachingConnectionFactory 사용하기 위해 새로 등록
-    @Bean
-    public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory factory = new CachingConnectionFactory();
-        factory.setHost(host);
-        factory.setUsername(username);
-        factory.setPassword(password);
-        return factory;
-    }
+	// 스프링에서 자동으로 생성되는 ConnectionFactory = SimpleConnectionFactory
+	// CachingConnectionFactory 사용하기 위해 새로 등록
+	@Bean
+	public ConnectionFactory connectionFactory() {
+		CachingConnectionFactory factory = new CachingConnectionFactory();
+		factory.setHost(host);
+		factory.setUsername(username);
+		factory.setPassword(password);
+		return factory;
+	}
 
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(messageConverter);
-        return rabbitTemplate;
-    }
+	@Bean
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		rabbitTemplate.setMessageConverter(messageConverter);
+		return rabbitTemplate;
+	}
 
-    @Bean
-    public MessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+	@Bean
+	public MessageConverter messageConverter() {
+		return new Jackson2JsonMessageConverter();
+	}
 }

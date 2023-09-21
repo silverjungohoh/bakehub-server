@@ -5,9 +5,11 @@ import com.project.snsserver.domain.board.model.dto.EditCommentRequest;
 import com.project.snsserver.domain.board.model.dto.EditCommentResponse;
 import com.project.snsserver.domain.board.service.CommentService;
 import com.project.snsserver.domain.security.CustomUserDetails;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -17,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
 import java.util.Map;
 
 @RestController
@@ -25,58 +28,59 @@ import java.util.Map;
 @Tag(name = "댓글", description = "게시판 API Document - 댓글")
 public class CommentController {
 
-    private final CommentService commentService;
+	private final CommentService commentService;
 
-    /**
-     * 댓글 작성
-     */
-    @Operation(summary = "댓글 작성")
-    @PostMapping("/{postId}/comments")
-    public ResponseEntity<EditCommentResponse> writeComment(@PathVariable Long postId,
-                                                            @RequestBody @Valid EditCommentRequest request,
-                                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+	/**
+	 * 댓글 작성
+	 */
+	@Operation(summary = "댓글 작성")
+	@PostMapping("/{postId}/comments")
+	public ResponseEntity<EditCommentResponse> writeComment(@PathVariable Long postId,
+		@RequestBody @Valid EditCommentRequest request,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        EditCommentResponse response = commentService.writeComment(postId, request, userDetails.getMember());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+		EditCommentResponse response = commentService.writeComment(postId, request, userDetails.getMember());
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
 
-    /**
-     * 댓글 삭제
-     */
-    @Operation(summary = "댓글 삭제")
-    @DeleteMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,
-                                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+	/**
+	 * 댓글 삭제
+	 */
+	@Operation(summary = "댓글 삭제")
+	@DeleteMapping("/{postId}/comments/{commentId}")
+	public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        Map<String, String> response = commentService.deleteComment(postId, commentId, userDetails.getMember());
-        return ResponseEntity.ok(response);
-    }
+		Map<String, String> response = commentService.deleteComment(postId, commentId, userDetails.getMember());
+		return ResponseEntity.ok(response);
+	}
 
-    /**
-     * 댓글 수정
-     */
-    @Operation(summary = "댓글 수정")
-    @PatchMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<EditCommentResponse> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
-                                                             @RequestBody @Valid EditCommentRequest request,
-                                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+	/**
+	 * 댓글 수정
+	 */
+	@Operation(summary = "댓글 수정")
+	@PatchMapping("/{postId}/comments/{commentId}")
+	public ResponseEntity<EditCommentResponse> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
+		@RequestBody @Valid EditCommentRequest request,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        EditCommentResponse response = commentService.updateComment(postId, commentId, request, userDetails.getMember());
-        return ResponseEntity.ok(response);
-    }
+		EditCommentResponse response = commentService.updateComment(postId, commentId, request,
+			userDetails.getMember());
+		return ResponseEntity.ok(response);
+	}
 
-    /**
-     * 게시물 댓글 조회
-     */
-    @Operation(summary = "게시물 댓글 조회")
-    @GetMapping("/{postId}/comments")
-    public ResponseEntity<Slice<CommentResponse>> getCommentsByPost(@PathVariable Long postId,
-                                               @RequestParam(required = false) Long lastCommentId,
-                                               @AuthenticationPrincipal CustomUserDetails userDetails,
-                                               @PageableDefault Pageable pageable) {
+	/**
+	 * 게시물 댓글 조회
+	 */
+	@Operation(summary = "게시물 댓글 조회")
+	@GetMapping("/{postId}/comments")
+	public ResponseEntity<Slice<CommentResponse>> getCommentsByPost(@PathVariable Long postId,
+		@RequestParam(required = false) Long lastCommentId,
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PageableDefault Pageable pageable) {
 
-        Slice<CommentResponse> response
-                = commentService.getCommentsByPost(postId, lastCommentId, userDetails.getUsername(),  pageable);
-        return ResponseEntity.ok(response);
-    }
+		Slice<CommentResponse> response
+			= commentService.getCommentsByPost(postId, lastCommentId, userDetails.getUsername(), pageable);
+		return ResponseEntity.ok(response);
+	}
 }

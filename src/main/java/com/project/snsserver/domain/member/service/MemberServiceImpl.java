@@ -19,7 +19,10 @@ import com.project.snsserver.domain.notification.repository.jpa.NotificationRepo
 import com.project.snsserver.domain.security.CustomUserDetails;
 import com.project.snsserver.domain.security.jwt.JwtTokenProvider;
 import com.project.snsserver.global.error.exception.MemberException;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -36,278 +39,272 @@ import java.util.Objects;
 
 import static com.project.snsserver.global.error.type.MemberErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-    private static final String SUBJECT = "[회원 인증] 이메일 인증 코드 발송 안내";
-    private static final String DIR = "profile";
-
-    private final MemberRepository memberRepository;
-    private final MailService mailService;
-    private final MemberAuthCodeRepository memberAuthCodeRepository;
-    private final AwsS3Service awsS3Service;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final LogoutAccessTokenRepository logoutAccessTokenRepository;
-    private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
-    private final PostHeartRepository postHeartRepository;
-    private final NotificationRepository notificationRepository;
-    private final PostImageRepository postImageRepository;
-    private final PostHashtagRepository postHashtagRepository;
-
-
-    @Override
-    public Map<String, String> checkEmailDuplicate(String email) {
-
-        if(memberRepository.existsByEmail(email)) {
-            throw new MemberException(DUPLICATED_EMAIL);
-        }
-        return getMessage("사용 가능한 이메일입니다.");
-    }
-
-    @Override
-    public Map<String, String> checkNicknameDuplicate(String nickname) {
-
-        if(memberRepository.existsByNickname(nickname)) {
-            throw new MemberException(DUPLICATED_NICKNAME);
-        }
-        return getMessage("사용 가능한 닉네임입니다.");
-    }
-
-    @Override
-    @Transactional
-    public Map<String, String> sendEmailAuthCode(String email) {
-
-        String authCode = RandomStringUtils.randomAlphanumeric(12);
-
-        MailMessage mail = MailMessage.builder()
-                .to(email)
-                .subject(SUBJECT)
-                .message("인증 코드 : " + authCode)
-                .build();
-
-        boolean result = mailService.sendMail(mail, authCode);
-        if(!result) throw new MemberException(FAIL_TO_SEND_EMAIL);
-
-        MemberAuthCode code = MemberAuthCode.builder()
-                .id(authCode)
-                .email(email)
-                .expiration(1000L * 60 * 3)
-                .build();
-
-        memberAuthCodeRepository.save(code);
-        return getMessage("메일 인증번호를 전송하였습니다.");
-    }
-
-    @Override
-    public Map<String, String> verifyEmailAuthCode(VerifyAuthCodeRequest request) {
-
-        MemberAuthCode authCode = memberAuthCodeRepository.findById(request.getCode())
-                .orElseThrow(() -> new MemberException(INCORRECT_EMAIL_AUTH_CODE));
-
-       if(!Objects.equals(request.getEmail(), authCode.getEmail())) {
-           throw new MemberException(INCORRECT_EMAIL_AUTH_CODE);
-       }
-
-        return getMessage("메일 인증에 성공하였습니다.");
-    }
-
-    @Override
-    @Transactional
-    public SignUpResponse signUp(MultipartFile file, SignUpRequest request) {
-
-        if (!Objects.equals(request.getPasswordCheck(), request.getPassword())) {
-            throw new MemberException(INCORRECT_PASSWORD_CHECK);
-        }
-
-        String profileImgUrl = awsS3Service.uploadFile(file, DIR);
-
-        Member member = Member.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .nickname(request.getNickname())
-                .gender(request.getGender())
-                .profileImgUrl(profileImgUrl)
-                .status(MemberStatus.ACTIVE)
-                .role(MemberRole.USER)
-                .build();
-
-        memberRepository.save(member);
-        return SignUpResponse.fromEntity(member);
-    }
-    @Override
-    @Transactional
-    public LoginResponse login(LoginRequest request) {
+	private static final String SUBJECT = "[회원 인증] 이메일 인증 코드 발송 안내";
+	private static final String DIR = "profile";
+
+	private final MemberRepository memberRepository;
+	private final MailService mailService;
+	private final MemberAuthCodeRepository memberAuthCodeRepository;
+	private final AwsS3Service awsS3Service;
+	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManagerBuilder authenticationManagerBuilder;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final RefreshTokenRepository refreshTokenRepository;
+	private final LogoutAccessTokenRepository logoutAccessTokenRepository;
+	private final CommentRepository commentRepository;
+	private final PostRepository postRepository;
+	private final PostHeartRepository postHeartRepository;
+	private final NotificationRepository notificationRepository;
+	private final PostImageRepository postImageRepository;
+	private final PostHashtagRepository postHashtagRepository;
+
+	@Override
+	public Map<String, String> checkEmailDuplicate(String email) {
+
+		if (memberRepository.existsByEmail(email)) {
+			throw new MemberException(DUPLICATED_EMAIL);
+		}
+		return getMessage("사용 가능한 이메일입니다.");
+	}
+
+	@Override
+	public Map<String, String> checkNicknameDuplicate(String nickname) {
+
+		if (memberRepository.existsByNickname(nickname)) {
+			throw new MemberException(DUPLICATED_NICKNAME);
+		}
+		return getMessage("사용 가능한 닉네임입니다.");
+	}
+
+	@Override
+	@Transactional
+	public Map<String, String> sendEmailAuthCode(String email) {
+
+		String authCode = RandomStringUtils.randomAlphanumeric(12);
+
+		MailMessage mail = MailMessage.builder()
+			.to(email)
+			.subject(SUBJECT)
+			.message("인증 코드 : " + authCode)
+			.build();
+
+		boolean result = mailService.sendMail(mail, authCode);
+		if (!result)
+			throw new MemberException(FAIL_TO_SEND_EMAIL);
+
+		MemberAuthCode code = MemberAuthCode.builder()
+			.id(authCode)
+			.email(email)
+			.expiration(1000L * 60 * 3)
+			.build();
+
+		memberAuthCodeRepository.save(code);
+		return getMessage("메일 인증번호를 전송하였습니다.");
+	}
+
+	@Override
+	public Map<String, String> verifyEmailAuthCode(VerifyAuthCodeRequest request) {
+
+		MemberAuthCode authCode = memberAuthCodeRepository.findById(request.getCode())
+			.orElseThrow(() -> new MemberException(INCORRECT_EMAIL_AUTH_CODE));
+
+		if (!Objects.equals(request.getEmail(), authCode.getEmail())) {
+			throw new MemberException(INCORRECT_EMAIL_AUTH_CODE);
+		}
+
+		return getMessage("메일 인증에 성공하였습니다.");
+	}
+
+	@Override
+	@Transactional
+	public SignUpResponse signUp(MultipartFile file, SignUpRequest request) {
+
+		if (!Objects.equals(request.getPasswordCheck(), request.getPassword())) {
+			throw new MemberException(INCORRECT_PASSWORD_CHECK);
+		}
+
+		String profileImgUrl = awsS3Service.uploadFile(file, DIR);
+
+		Member member = Member.builder()
+			.email(request.getEmail())
+			.password(passwordEncoder.encode(request.getPassword()))
+			.nickname(request.getNickname())
+			.gender(request.getGender())
+			.profileImgUrl(profileImgUrl)
+			.status(MemberStatus.ACTIVE)
+			.role(MemberRole.USER)
+			.build();
+
+		memberRepository.save(member);
+		return SignUpResponse.fromEntity(member);
+	}
+
+	@Override
+	@Transactional
+	public LoginResponse login(LoginRequest request) {
 
-        // UsernamePasswordAuthenticationToken 객체 생성
-        UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+		// UsernamePasswordAuthenticationToken 객체 생성
+		UsernamePasswordAuthenticationToken authenticationToken
+			= new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 
-        // authenticate 메서드가 실행이 될 때 loadUserByUsername 메서드가 실행
-        // 성공 시 사용자 정보가 담긴 Authentication 객체를 생성하여 반환
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		// authenticate 메서드가 실행이 될 때 loadUserByUsername 메서드가 실행
+		// 성공 시 사용자 정보가 담긴 Authentication 객체를 생성하여 반환
+		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // SecurityContext에 Authentication 객체를 저장
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+		// SecurityContext에 Authentication 객체를 저장
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String accessToken = jwtTokenProvider.generateAccessToken(userDetails.getUsername(), userDetails.getRole().name());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getUsername());
+		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
+		String accessToken = jwtTokenProvider.generateAccessToken(userDetails.getUsername(),
+			userDetails.getRole().name());
+		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getUsername());
 
-        return LoginResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
+		return LoginResponse.builder()
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
+	}
 
-    @Override
-    public ReissueTokenResponse reissueAccessToken(ReissueTokenRequest request) {
-        String token = request.getRefreshToken();
+	@Override
+	public ReissueTokenResponse reissueAccessToken(String refreshToken, Member member) {
 
-        // refresh token 유효성 확인
-        if(!jwtTokenProvider.validateRefreshToken(token)) {
-            throw new MemberException(INVALID_REFRESH_TOKEN);
-        }
+		RefreshToken refreshTokenInRedis = refreshTokenRepository.findById(member.getEmail())
+			.orElseThrow(() -> new MemberException(FAIL_TO_REISSUE_TOKEN));
 
-        String email = jwtTokenProvider.extractUsername(token);
+		if (!Objects.equals(refreshTokenInRedis.getRefreshToken(), refreshToken)) {
+			log.error("rtk in redis and rtk in request header are not equal");
+			throw new MemberException(FAIL_TO_REISSUE_TOKEN);
+		}
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+		String newAccessToken = jwtTokenProvider.generateAccessToken(member.getEmail(), member.getRole().name());
+		String newRefreshToken = jwtTokenProvider.generateRefreshToken(member.getEmail());
 
-        RefreshToken refreshToken = refreshTokenRepository.findById(email)
-                .orElseThrow(() -> new MemberException(INVALID_REFRESH_TOKEN));
+		return ReissueTokenResponse.builder()
+			.accessToken(newAccessToken)
+			.refreshToken(newRefreshToken)
+			.build();
+	}
 
-        if(!Objects.equals(refreshToken.getRefreshToken(), token)) {
-            throw new MemberException(INVALID_REFRESH_TOKEN);
-        }
+	@Override
+	@Transactional
+	public Map<String, String> logout(LogoutRequest request, String email) {
 
-        String accessToken = jwtTokenProvider.generateAccessToken(email, member.getRole().name());
+		String accessToken = request.getAccessToken();
+		Long remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
 
-        return ReissueTokenResponse.builder()
-                .accessToken(accessToken)
-                .build();
-    }
+		LogoutAccessToken logoutAccessToken = LogoutAccessToken.builder()
+			.id(accessToken)
+			.email(email)
+			.expiration(remainingTime)
+			.build();
 
-    @Override
-    @Transactional
-    public Map<String, String> logout(LogoutRequest request, String email) {
+		logoutAccessTokenRepository.save(logoutAccessToken);
 
-        String accessToken = request.getAccessToken();
-        Long remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
+		// redis refresh token 삭제
+		refreshTokenRepository.deleteById(email);
 
-        LogoutAccessToken logoutAccessToken = LogoutAccessToken.builder()
-                .id(accessToken)
-                .email(email)
-                .expiration(remainingTime)
-                .build();
+		return getMessage("로그아웃에 성공하였습니다.");
+	}
 
-        logoutAccessTokenRepository.save(logoutAccessToken);
+	@Override
+	@Transactional
+	public Map<String, String> updatePassword(UpdatePasswordRequest request, String email) {
 
-        // redis refresh token 삭제
-        refreshTokenRepository.deleteById(email);
+		Member member = memberRepository.findByEmail(email)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return getMessage("로그아웃에 성공하였습니다.");
-    }
+		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+			throw new MemberException(INCORRECT_NOW_PASSWORD);
+		}
 
-    @Override
-    @Transactional
-    public Map<String, String> updatePassword(UpdatePasswordRequest request, String email) {
+		if (!Objects.equals(request.getNewPassword(), request.getPasswordCheck())) {
+			throw new MemberException(INCORRECT_PASSWORD_CHECK);
+		}
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() ->  new MemberException(MEMBER_NOT_FOUND));
+		member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+		return getMessage("비밀번호 변경이 완료되었습니다.");
+	}
 
-        if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new MemberException(INCORRECT_NOW_PASSWORD);
-        }
+	@Override
+	@Transactional
+	public Map<String, String> updateNickname(UpdateNicknameRequest request, String email) {
 
-        if(!Objects.equals(request.getNewPassword(), request.getPasswordCheck())) {
-            throw new MemberException(INCORRECT_PASSWORD_CHECK);
-        }
+		Member member = memberRepository.findByEmail(email)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
-        return getMessage("비밀번호 변경이 완료되었습니다.");
-    }
+		if (memberRepository.existsByNickname(request.getNickname())) {
+			throw new MemberException(DUPLICATED_NICKNAME);
+		}
 
-    @Override
-    @Transactional
-    public Map<String, String> updateNickname(UpdateNicknameRequest request, String email) {
+		member.updateNickname(request.getNickname());
+		return getMessage("닉네임 변경이 완료되었습니다.");
+	}
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+	@Override
+	@Transactional
+	public Map<String, String> updateProfileImg(MultipartFile file, String email) {
 
-        if(memberRepository.existsByNickname(request.getNickname())) {
-            throw new MemberException(DUPLICATED_NICKNAME);
-        }
+		Member member = memberRepository.findByEmail(email)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        member.updateNickname(request.getNickname());
-        return getMessage("닉네임 변경이 완료되었습니다.");
-    }
+		String newProfileImgUrl = awsS3Service.uploadFile(file, DIR);
+		awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
 
-    @Override
-    @Transactional
-    public Map<String, String> updateProfileImg(MultipartFile file, String email) {
+		member.updateProfileImg(newProfileImgUrl);
+		return getMessage("프로필 이미지 변경이 완료되었습니다.");
+	}
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+	@Override
+	@Transactional
+	public Map<String, String> withdraw(WithdrawRequest request, Member member) {
 
-        String newProfileImgUrl = awsS3Service.uploadFile(file, DIR);
-        awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
+		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+			throw new MemberException(FAIL_TO_WITHDRAWAL);
+		}
 
-        member.updateProfileImg(newProfileImgUrl);
-        return getMessage("프로필 이미지 변경이 완료되었습니다.");
-    }
+		// 회원이 작성한 댓글, 좋아요 삭제
+		commentRepository.deleteCommentAllByMemberId(member.getId());
+		postHeartRepository.deletePostHeartAllByMemberId(member.getId());
 
-    @Override
-    @Transactional
-    public Map<String, String> withdraw(WithdrawRequest request, Member member) {
+		// 회원의 게시물에 달린 댓글, 좋아요, 해시태그 삭제
+		commentRepository.deleteCommentAllInPostIdsByMemberId(member.getId());
+		postHeartRepository.deletePostHeartAllInPostIdsByMemberId(member.getId());
+		postHashtagRepository.deletePostHashtagAllInPostIdsByMemberId(member.getId());
 
-        if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new MemberException(FAIL_TO_WITHDRAWAL);
-        }
+		// 회원의 게시물 이미지 삭제
+		postImageRepository.deleteAllPostImageInPostIdsByMemberId(member.getId());
 
-        // 회원이 작성한 댓글, 좋아요 삭제
-        commentRepository.deleteCommentAllByMemberId(member.getId());
-        postHeartRepository.deletePostHeartAllByMemberId(member.getId());
+		// 회원의 알림 전체 삭제
+		notificationRepository.deleteNotificationAllByMemberId(member.getId());
 
-        // 회원의 게시물에 달린 댓글, 좋아요, 해시태그 삭제
-        commentRepository.deleteCommentAllInPostIdsByMemberId(member.getId());
-        postHeartRepository.deletePostHeartAllInPostIdsByMemberId(member.getId());
-        postHashtagRepository.deletePostHashtagAllInPostIdsByMemberId(member.getId());
+		// 회원의 게시물 전체 삭제
+		postRepository.deleteAllPostByMemberId(member.getId());
 
-        // 회원의 게시물 이미지 삭제
-        postImageRepository.deleteAllPostImageInPostIdsByMemberId(member.getId());
+		awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
+		memberRepository.delete(member);
 
-        // 회원의 알림 전체 삭제
-        notificationRepository.deleteNotificationAllByMemberId(member.getId());
+		return getMessage("회원 탈퇴가 완료되었습니다.");
+	}
 
-        // 회원의 게시물 전체 삭제
-        postRepository.deleteAllPostByMemberId(member.getId());
+	@Override
+	@Transactional(readOnly = true)
+	public MemberDetailResponse getMemberDetail(Member member) {
+		return memberRepository.findMemberDetailByMemberId(member.getId());
+	}
 
-        awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
-        memberRepository.delete(member);
+	@Override
+	public ProfileResponse getMemberProfile(Member member) {
+		return ProfileResponse.fromEntity(member);
+	}
 
-        return getMessage("회원 탈퇴가 완료되었습니다.");
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public MemberDetailResponse getMemberDetail(Member member) {
-        return memberRepository.findMemberDetailByMemberId(member.getId());
-    }
-
-    @Override
-    public ProfileResponse getMemberProfile(Member member) {
-        return ProfileResponse.fromEntity(member);
-    }
-
-
-    private static Map<String, String> getMessage(String message) {
-        Map<String, String> result = new HashMap<>();
-        result.put("result", message);
-        return result;
-    }
+	private static Map<String, String> getMessage(String message) {
+		Map<String, String> result = new HashMap<>();
+		result.put("result", message);
+		return result;
+	}
 }

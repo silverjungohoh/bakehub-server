@@ -7,7 +7,9 @@ import com.project.snsserver.domain.board.model.entity.PostImage;
 import com.project.snsserver.domain.board.repository.jpa.*;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.error.exception.BoardException;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -22,183 +24,183 @@ import static com.project.snsserver.global.error.type.BoardErrorCode.*;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
-    private static final String DIR = "post";
+	private static final String DIR = "post";
 
-    private final AwsS3Service awsS3Service;
-    private final PostRepository postRepository;
-    private final PostImageRepository postImageRepository;
-    private final CommentRepository commentRepository;
-    private final PostHeartRepository postHeartRepository;
-    private final PostHashtagService postHashtagService;
-    private final PostHashtagRepository postHashtagRepository;
+	private final AwsS3Service awsS3Service;
+	private final PostRepository postRepository;
+	private final PostImageRepository postImageRepository;
+	private final CommentRepository commentRepository;
+	private final PostHeartRepository postHeartRepository;
+	private final PostHashtagService postHashtagService;
+	private final PostHashtagRepository postHashtagRepository;
 
-    @Override
-    @Transactional
-    public EditPostResponse writePost(EditPostRequest request, List<MultipartFile> files, Member member) {
+	@Override
+	@Transactional
+	public EditPostResponse writePost(EditPostRequest request, List<MultipartFile> files, Member member) {
 
-        if(!Objects.isNull(files) && files.size() > 5) {
-            throw new BoardException(IMAGE_COUNT_EXCEEDED);
-        }
+		if (!Objects.isNull(files) && files.size() > 5) {
+			throw new BoardException(IMAGE_COUNT_EXCEEDED);
+		}
 
-        Post post = Post.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .member(member)
-                .build();
+		Post post = Post.builder()
+			.title(request.getTitle())
+			.content(request.getContent())
+			.member(member)
+			.build();
 
-        postRepository.save(post);
+		postRepository.save(post);
 
-        List<String> imageUrls = Objects.isNull(files)
-                ? new ArrayList<>()
-                : awsS3Service.uploadFiles(files, DIR);
+		List<String> imageUrls = Objects.isNull(files)
+			? new ArrayList<>()
+			: awsS3Service.uploadFiles(files, DIR);
 
-        List<PostImageResponse> postImgResponse = new ArrayList<>();
+		List<PostImageResponse> postImgResponse = new ArrayList<>();
 
-        if(!imageUrls.isEmpty()) {
-            for(String url : imageUrls) {
-                PostImage image = PostImage.builder()
-                        .postImageUrl(url)
-                        .post(post)
-                        .build();
+		if (!imageUrls.isEmpty()) {
+			for (String url : imageUrls) {
+				PostImage image = PostImage.builder()
+					.postImageUrl(url)
+					.post(post)
+					.build();
 
-                postImageRepository.save(image);
-                postImgResponse.add(PostImageResponse.fromEntity(image));
-            }
-        }
-        if(!Objects.isNull(request.getTagNames())) {
-            postHashtagService.createPostHashtag(post, request.getTagNames());
-        }
-        return EditPostResponse.fromEntity(post, postImgResponse);
-    }
+				postImageRepository.save(image);
+				postImgResponse.add(PostImageResponse.fromEntity(image));
+			}
+		}
+		if (!Objects.isNull(request.getTagNames())) {
+			postHashtagService.createPostHashtag(post, request.getTagNames());
+		}
+		return EditPostResponse.fromEntity(post, postImgResponse);
+	}
 
-    @Override
-    @Transactional
-    public EditPostResponse updatePost(Long postId, EditPostRequest request, Member member) {
+	@Override
+	@Transactional
+	public EditPostResponse updatePost(Long postId, EditPostRequest request, Member member) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        if(!Objects.equals(post.getMember().getEmail(), member.getEmail())) {
-            throw new BoardException(FAIL_TO_UPDATE_POST);
-        }
+		if (!Objects.equals(post.getMember().getEmail(), member.getEmail())) {
+			throw new BoardException(FAIL_TO_UPDATE_POST);
+		}
 
-        // 해당 게시물의 모든 해시태그 삭제 후 입력 받은 해시태그 생성
-        postHashtagRepository.deletePostHashtagAllByPostId(post.getId());
+		// 해당 게시물의 모든 해시태그 삭제 후 입력 받은 해시태그 생성
+		postHashtagRepository.deletePostHashtagAllByPostId(post.getId());
 
-        if(!Objects.isNull(request.getTagNames())) {
-            postHashtagService.createPostHashtag(post, request.getTagNames());
-        }
+		if (!Objects.isNull(request.getTagNames())) {
+			postHashtagService.createPostHashtag(post, request.getTagNames());
+		}
 
-        post.update(request.getTitle(), request.getContent());
+		post.update(request.getTitle(), request.getContent());
 
-        List<PostImageResponse> postImageResponse
-                = postImageRepository.findAllPostImageByPostId(post.getId());
+		List<PostImageResponse> postImageResponse
+			= postImageRepository.findAllPostImageByPostId(post.getId());
 
-        return EditPostResponse.fromEntity(post, postImageResponse);
-    }
+		return EditPostResponse.fromEntity(post, postImageResponse);
+	}
 
-    @Override
-    @Transactional
-    public Map<String, String> deletePost(Long postId, Member member) {
+	@Override
+	@Transactional
+	public Map<String, String> deletePost(Long postId, Member member) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        if(!Objects.equals(post.getMember().getEmail(), member.getEmail())) {
-            throw new BoardException(FAIL_TO_DELETE_POST);
-        }
+		if (!Objects.equals(post.getMember().getEmail(), member.getEmail())) {
+			throw new BoardException(FAIL_TO_DELETE_POST);
+		}
 
-        List<PostImage> postImages = postImageRepository.findAllByPost(post);
-        if(!postImages.isEmpty()) {
-            postImages.forEach((postImage -> awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR)));
-        }
+		List<PostImage> postImages = postImageRepository.findAllByPost(post);
+		if (!postImages.isEmpty()) {
+			postImages.forEach((postImage -> awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR)));
+		}
 
-        commentRepository.deleteCommentAllByPostId(postId);
-        postHeartRepository.deletePostHeartAllByPostId(postId);
-        postImageRepository.deleteAllPostImageByPostId(postId);
-        postHashtagRepository.deletePostHashtagAllByPostId(postId);
+		commentRepository.deleteCommentAllByPostId(postId);
+		postHeartRepository.deletePostHeartAllByPostId(postId);
+		postImageRepository.deleteAllPostImageByPostId(postId);
+		postHashtagRepository.deletePostHashtagAllByPostId(postId);
 
-        postRepository.delete(post);
-        return getMessage("게시물이 삭제되었습니다.");
-    }
+		postRepository.delete(post);
+		return getMessage("게시물이 삭제되었습니다.");
+	}
 
-    @Override
-    @Transactional
-    public PostImageResponse addPostImage(Long postId, MultipartFile file) {
+	@Override
+	@Transactional
+	public PostImageResponse addPostImage(Long postId, MultipartFile file) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        String imageUrl = awsS3Service.uploadFile(file, DIR);
+		String imageUrl = awsS3Service.uploadFile(file, DIR);
 
-        PostImage postImage = PostImage.builder()
-                .post(post)
-                .postImageUrl(imageUrl)
-                .build();
+		PostImage postImage = PostImage.builder()
+			.post(post)
+			.postImageUrl(imageUrl)
+			.build();
 
-        postImageRepository.save(postImage);
-        return PostImageResponse.fromEntity(postImage);
-    }
+		postImageRepository.save(postImage);
+		return PostImageResponse.fromEntity(postImage);
+	}
 
-    @Override
-    @Transactional
-    public Map<String, String> deletePostImage(Long postId, Long postImageId) {
+	@Override
+	@Transactional
+	public Map<String, String> deletePostImage(Long postId, Long postImageId) {
 
-        if(!postRepository.existsById(postId)) {
-            throw new BoardException(POST_NOT_FOUND);
-        }
+		if (!postRepository.existsById(postId)) {
+			throw new BoardException(POST_NOT_FOUND);
+		}
 
-        PostImage postImage = postImageRepository.findById(postImageId)
-                .orElseThrow(() -> new BoardException(POST_IMAGE_NOT_FOUND));
+		PostImage postImage = postImageRepository.findById(postImageId)
+			.orElseThrow(() -> new BoardException(POST_IMAGE_NOT_FOUND));
 
-        postImageRepository.delete(postImage);
-        awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR);
+		postImageRepository.delete(postImage);
+		awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR);
 
-        return getMessage("이미지가 삭제되었습니다.");
-    }
+		return getMessage("이미지가 삭제되었습니다.");
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable) {
-        return postRepository.findAllPostsWithCommentCntAndHeartCnt(lastPostId, pageable);
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable) {
+		return postRepository.findAllPostsWithCommentCntAndHeartCnt(lastPostId, pageable);
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public PostDetailResponse getPostDetail(Long postId, Long memberId) {
+	@Override
+	@Transactional(readOnly = true)
+	public PostDetailResponse getPostDetail(Long postId, Long memberId) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        PostDetailResponse postDetailResponse
-                = postRepository.findPostByPostId(post.getId(), memberId);
+		PostDetailResponse postDetailResponse
+			= postRepository.findPostByPostId(post.getId(), memberId);
 
-        List<PostImageResponse> postImageResponse
-                = postImageRepository.findAllPostImageByPostId(post.getId());
+		List<PostImageResponse> postImageResponse
+			= postImageRepository.findAllPostImageByPostId(post.getId());
 
-        postDetailResponse.setPostImages(postImageResponse);
-        return postDetailResponse;
-    }
+		postDetailResponse.setPostImages(postImageResponse);
+		return postDetailResponse;
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<PostHashtagResponse> getPostHashtags(Long postId) {
+	@Override
+	@Transactional(readOnly = true)
+	public List<PostHashtagResponse> getPostHashtags(Long postId) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BoardException(POST_NOT_FOUND));
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-        return postHashtagRepository.findAllPostHashtagByPostId(post.getId());
-    }
+		return postHashtagRepository.findAllPostHashtagByPostId(post.getId());
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public Slice<PostResponse> getPostsByHashtag(Long lastPostId, String tag, Pageable pageable) {
-        return postRepository.findAllPostsByHashtag(lastPostId, tag, pageable);
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public Slice<PostResponse> getPostsByHashtag(Long lastPostId, String tag, Pageable pageable) {
+		return postRepository.findAllPostsByHashtag(lastPostId, tag, pageable);
+	}
 
-    private static Map<String, String> getMessage(String message) {
-        Map<String, String> result = new HashMap<>();
-        result.put("result", message);
-        return result;
-    }
+	private static Map<String, String> getMessage(String message) {
+		Map<String, String> result = new HashMap<>();
+		result.put("result", message);
+		return result;
+	}
 }

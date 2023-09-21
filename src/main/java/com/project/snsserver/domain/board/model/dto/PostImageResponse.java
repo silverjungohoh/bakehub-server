@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.board.model.dto;
 
 import com.project.snsserver.domain.board.model.entity.PostImage;
+
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,17 +13,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PostImageResponse {
 
-    private Long postImageId;
+	private Long postImageId;
 
-    private String postImageUrl;
+	private String postImageUrl;
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-    public static PostImageResponse fromEntity(PostImage postImage) {
-        return PostImageResponse.builder()
-                .postImageId(postImage.getId())
-                .postImageUrl(postImage.getPostImageUrl())
-                .createdAt(postImage.getCreatedAt())
-                .build();
-    }
+	public static PostImageResponse fromEntity(PostImage postImage) {
+		return PostImageResponse.builder()
+			.postImageId(postImage.getId())
+			.postImageUrl(postImage.getPostImageUrl())
+			.createdAt(postImage.getCreatedAt())
+			.build();
+	}
 }

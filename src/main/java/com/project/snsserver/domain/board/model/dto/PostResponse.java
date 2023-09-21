@@ -11,17 +11,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PostResponse {
 
-    private Long postId;
+	private Long postId;
 
-    private String title;
+	private String title;
 
-    private String content;
+	private String content;
 
-    private String nickname;
+	private String nickname;
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-    private Long commentCnt;
+	private Long commentCnt;
 
-    private Long heartCnt;
+	private Long heartCnt;
 }

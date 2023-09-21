@@ -6,8 +6,8 @@ import java.util.Set;
 
 public interface PostHashtagService {
 
-    /**
-     * hashtag - post hashtag 연결
-     */
-    void createPostHashtag(Post post, Set<String> tagNames);
+	/**
+	 * hashtag - post hashtag 연결
+	 */
+	void createPostHashtag(Post post, Set<String> tagNames);
 }
