@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SendAuthCodeRequest {
 
-    private String email;
+	private String email;
 }

@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentResponse {
 
-    private Long commentId;
+	private Long commentId;
 
-    private String content;
+	private String content;
 
-    private String nickname;
+	private String nickname;
 
-    private Boolean isWriter; // 작성자 여부
+	private Boolean isWriter; // 작성자 여부
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 }

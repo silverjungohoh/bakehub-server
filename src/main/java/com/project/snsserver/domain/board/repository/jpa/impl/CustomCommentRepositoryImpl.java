@@ -4,7 +4,9 @@ import com.project.snsserver.domain.board.model.dto.CommentResponse;
 import com.project.snsserver.domain.board.repository.jpa.CustomCommentRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -21,77 +23,77 @@ import static com.querydsl.jpa.JPAExpressions.select;
 @RequiredArgsConstructor
 public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 
-    private final JPAQueryFactory queryFactory;
+	private final JPAQueryFactory queryFactory;
 
+	/**
+	 * 특정 게시물의 댓글 조회
+	 */
+	@Override
+	public Slice<CommentResponse> findCommentAllByPostId(Long postId, Long lastCommentId, String email,
+		Pageable pageable) {
 
-    /**
-     * 특정 게시물의 댓글 조회
-     */
-    @Override
-    public Slice<CommentResponse> findCommentAllByPostId(Long postId, Long lastCommentId, String email, Pageable pageable) {
+		List<CommentResponse> comments = queryFactory.select(
+				bean(CommentResponse.class,
+					comment.id.as("commentId"),
+					comment.content.as("content"),
+					member.nickname.as("nickname"),
+					asBoolean(member.email.eq(email)).as("isWriter"),
+					comment.createdAt.as("createdAt")
+				)
+			)
+			.from(comment)
+			.leftJoin(comment.post, post)
+			.leftJoin(comment.member, member)
+			.where(lastCommentId(lastCommentId), comment.post.id.eq(postId))
+			.orderBy(comment.createdAt.desc())
+			.limit(pageable.getPageSize() + 1)
+			.fetch();
 
-        List<CommentResponse> comments = queryFactory.select(
-                        bean(CommentResponse.class,
-                                comment.id.as("commentId"),
-                                comment.content.as("content"),
-                                member.nickname.as("nickname"),
-                                asBoolean(member.email.eq(email)).as("isWriter"),
-                                comment.createdAt.as("createdAt")
-                        )
-                )
-                .from(comment)
-                .leftJoin(comment.post, post)
-                .leftJoin(comment.member, member)
-                .where(lastCommentId(lastCommentId), comment.post.id.eq(postId))
-                .orderBy(comment.createdAt.desc())
-                .limit(pageable.getPageSize() + 1)
-                .fetch();
+		return checkLastPage(pageable, comments);
+	}
 
-        return checkLastPage(pageable, comments);
-    }
+	/**
+	 * 특정 게시물의 댓글 전체 삭제
+	 */
+	@Override
+	public Long deleteCommentAllByPostId(Long postId) {
+		return queryFactory.delete(comment)
+			.where(comment.post.id.eq(postId))
+			.execute();
+	}
 
-    /**
-     * 특정 게시물의 댓글 전체 삭제
-     */
-    @Override
-    public Long deleteCommentAllByPostId(Long postId) {
-        return queryFactory.delete(comment)
-                .where(comment.post.id.eq(postId))
-                .execute();
-    }
+	@Override
+	public Long deleteCommentAllByMemberId(Long memberId) {
+		return queryFactory.delete(comment)
+			.where(comment.member.id.eq(memberId))
+			.execute();
+	}
 
-    @Override
-    public Long deleteCommentAllByMemberId(Long memberId) {
-        return queryFactory.delete(comment)
-                .where(comment.member.id.eq(memberId))
-                .execute();
-    }
+	public Long deleteCommentAllInPostIdsByMemberId(Long memberId) {
+		return queryFactory.delete(comment)
+			.where(comment.post.id.in(
+					select(post.id).from(post).where(post.member.id.eq(memberId))
+				)
+			)
+			.execute();
+	}
 
-    public Long deleteCommentAllInPostIdsByMemberId(Long memberId) {
-        return queryFactory.delete(comment)
-                .where(comment.post.id.in(
-                                select(post.id).from(post).where(post.member.id.eq(memberId))
-                        )
-                )
-                .execute();
-    }
+	private BooleanExpression lastCommentId(Long lastCommentId) {
+		if (lastCommentId == null) {
+			return null;
+		}
+		return comment.id.lt(lastCommentId);
+	}
 
-    private BooleanExpression lastCommentId(Long lastCommentId) {
-        if (lastCommentId == null) {
-            return null;
-        }
-        return comment.id.lt(lastCommentId);
-    }
+	private Slice<CommentResponse> checkLastPage(Pageable pageable, List<CommentResponse> comments) {
+		boolean hasNext = false;
 
-    private Slice<CommentResponse> checkLastPage(Pageable pageable, List<CommentResponse> comments) {
-        boolean hasNext = false;
+		// 조회한 댓글의 개수가 요청한 페이지 사이즈보다 크면 뒤에 더 있음
+		if (comments.size() > pageable.getPageSize()) {
+			hasNext = true;
+			comments.remove(pageable.getPageSize());
+		}
 
-        // 조회한 댓글의 개수가 요청한 페이지 사이즈보다 크면 뒤에 더 있음
-        if (comments.size() > pageable.getPageSize()) {
-            hasNext = true;
-            comments.remove(pageable.getPageSize());
-        }
-
-        return new SliceImpl<>(comments, pageable, hasNext);
-    }
+		return new SliceImpl<>(comments, pageable, hasNext);
+	}
 }

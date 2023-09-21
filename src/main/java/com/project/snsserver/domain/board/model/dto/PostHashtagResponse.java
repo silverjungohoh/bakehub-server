@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class PostHashtagResponse {
 
-    private Long postHashtagId;
+	private Long postHashtagId;
 
-    private String tagName;
+	private String tagName;
 }

@@ -13,6 +13,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class WithdrawRequest {
 
-    @NotBlank(message = "비밀번호를 입력해주세요.")
-    private String password;
+	@NotBlank(message = "비밀번호를 입력해주세요.")
+	private String password;
 }

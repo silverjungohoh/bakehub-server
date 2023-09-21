@@ -8,20 +8,20 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class SseConnectionPool implements ConnectionPool<String, SseConnection> {
 
-    private static final Map<String, SseConnection> connectionPool = new ConcurrentHashMap<>();
+	private static final Map<String, SseConnection> connectionPool = new ConcurrentHashMap<>();
 
-    @Override
-    public void add(String uniqueKey, SseConnection sseConnection) {
-        connectionPool.put(uniqueKey, sseConnection);
-    }
+	@Override
+	public void add(String uniqueKey, SseConnection sseConnection) {
+		connectionPool.put(uniqueKey, sseConnection);
+	}
 
-    @Override
-    public SseConnection get(String uniqueKey) {
-        return connectionPool.get(uniqueKey);
-    }
+	@Override
+	public SseConnection get(String uniqueKey) {
+		return connectionPool.get(uniqueKey);
+	}
 
-    @Override
-    public void delete(SseConnection session) {
-        connectionPool.remove(session.getUniqueKey());
-    }
+	@Override
+	public void delete(SseConnection session) {
+		connectionPool.remove(session.getUniqueKey());
+	}
 }

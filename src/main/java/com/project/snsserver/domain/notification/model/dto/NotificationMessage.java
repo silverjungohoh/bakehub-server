@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.notification.model.dto;
 
 import com.project.snsserver.domain.notification.type.NotificationType;
+
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -12,12 +13,12 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class NotificationMessage {
 
-    private String receiver;
+	private String receiver;
 
-    private NotificationType type;
+	private NotificationType type;
 
-    private String content;
+	private String content;
 
-    private Timestamp createdAt;
+	private Timestamp createdAt;
 }
 

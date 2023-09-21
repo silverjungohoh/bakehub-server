@@ -2,6 +2,7 @@ package com.project.snsserver.global.error.type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 import org.springframework.http.HttpStatus;
 
 /**
@@ -12,10 +13,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "E001", "유효성 검증 실패");
+	INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "E001", "유효성 검증 실패");
 
-
-    private final HttpStatus status;
-    private final String code;
-    private final String message;
+	private final HttpStatus status;
+	private final String code;
+	private final String message;
 }

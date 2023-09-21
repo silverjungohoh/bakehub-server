@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.board.model.entity;
 
 import com.project.snsserver.global.entity.BaseCreatedTimeEntity;
+
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,11 +13,11 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Hashtag extends BaseCreatedTimeEntity {
 
-    @Id
-    @Column(name = "hashtag_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@Column(name = "hashtag_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(unique = true)
-    private String name;
+	@Column(unique = true)
+	private String name;
 }

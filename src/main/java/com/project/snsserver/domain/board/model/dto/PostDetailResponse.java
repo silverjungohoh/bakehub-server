@@ -12,26 +12,25 @@ import java.util.List;
 @NoArgsConstructor
 public class PostDetailResponse {
 
-    private Long postId;
+	private Long postId;
 
-    private String title;
+	private String title;
 
-    private String content;
+	private String content;
 
-    private String nickname;
+	private String nickname;
 
-    private List<PostImageResponse> postImages;
+	private List<PostImageResponse> postImages;
 
-    private Boolean hasHeart; // 좋아요 여부
+	private Boolean hasHeart; // 좋아요 여부
 
-    private Long commentCnt;
+	private Long commentCnt;
 
-    private Long heartCnt;
+	private Long heartCnt;
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-
-    public void setPostImages(List<PostImageResponse> postImages) {
-        this.postImages = postImages;
-    }
+	public void setPostImages(List<PostImageResponse> postImages) {
+		this.postImages = postImages;
+	}
 }

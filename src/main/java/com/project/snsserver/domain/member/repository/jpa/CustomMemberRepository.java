@@ -4,5 +4,5 @@ import com.project.snsserver.domain.member.model.dto.MemberDetailResponse;
 
 public interface CustomMemberRepository {
 
-    MemberDetailResponse findMemberDetailByMemberId(Long memberId);
+	MemberDetailResponse findMemberDetailByMemberId(Long memberId);
 }

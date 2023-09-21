@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UpdateNicknameRequest {
 
-    @NotBlank(message = "닉네임을 입력해주세요.")
-    @Size(min = 2, max = 10, message = "닉네임은 최소 2자, 최대 10자까지 가능합니다")
-    private String nickname;
+	@NotBlank(message = "닉네임을 입력해주세요.")
+	@Size(min = 2, max = 10, message = "닉네임은 최소 2자, 최대 10자까지 가능합니다")
+	private String nickname;
 }
