@@ -1,6 +1,5 @@
-package com.project.snsserver.domain.board.repository.jpa.impl;
+package com.project.snsserver.domain.board.repository.jpa.custom;
 
-import com.project.snsserver.domain.board.repository.jpa.CustomPostHeartRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;

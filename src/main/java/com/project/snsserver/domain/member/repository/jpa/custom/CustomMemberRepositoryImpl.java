@@ -1,7 +1,6 @@
-package com.project.snsserver.domain.member.repository.jpa.impl;
+package com.project.snsserver.domain.member.repository.jpa.custom;
 
 import com.project.snsserver.domain.member.model.dto.MemberDetailResponse;
-import com.project.snsserver.domain.member.repository.jpa.CustomMemberRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;

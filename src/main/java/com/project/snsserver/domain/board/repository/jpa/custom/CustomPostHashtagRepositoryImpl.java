@@ -1,7 +1,6 @@
-package com.project.snsserver.domain.board.repository.jpa.impl;
+package com.project.snsserver.domain.board.repository.jpa.custom;
 
 import com.project.snsserver.domain.board.model.dto.PostHashtagResponse;
-import com.project.snsserver.domain.board.repository.jpa.CustomPostHashtagRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;

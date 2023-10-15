@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.member.repository.jpa;
 
 import com.project.snsserver.domain.member.model.entity.Member;
+import com.project.snsserver.domain.member.repository.jpa.custom.CustomMemberRepository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

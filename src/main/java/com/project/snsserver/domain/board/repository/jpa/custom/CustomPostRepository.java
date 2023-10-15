@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.board.repository.jpa;
+package com.project.snsserver.domain.board.repository.jpa.custom;
 
 import com.project.snsserver.domain.board.model.dto.PostDetailResponse;
 import com.project.snsserver.domain.board.model.dto.PostResponse;
