@@ -43,6 +43,20 @@ public class FollowServiceImpl implements FollowService {
 		return getMessage(String.format("%s님을 팔로우하셨습니다.", nickname));
 	}
 
+	@Override
+	@Transactional
+	public void unfollow(String nickname, Member follower) {
+
+		Member following = memberRepository.findByNickname(nickname)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+		Long result = followRepository.deleteByFollowerAndFollowing(follower, following);
+
+		if(result == 0) {
+			throw new MemberException(FOLLOW_NOT_FOUND);
+		}
+	}
+
 	private static Map<String, String> getMessage(String message) {
 		Map<String, String> result = new HashMap<>();
 		result.put("result", message);

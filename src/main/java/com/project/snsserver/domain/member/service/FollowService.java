@@ -10,4 +10,9 @@ public interface FollowService {
 	 * 회원 팔로우
 	 */
 	Map<String, String> follow(String nickname, Member follower);
+
+	/**
+	 * 회원 팔로우 취소
+	 */
+	void unfollow(String nickname, Member member);
 }

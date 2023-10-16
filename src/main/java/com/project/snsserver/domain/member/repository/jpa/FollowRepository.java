@@ -8,4 +8,6 @@ import com.project.snsserver.domain.member.model.entity.Member;
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
 	boolean existsByFollowerAndFollowing(Member follower, Member following);
+
+	Long deleteByFollowerAndFollowing(Member follower, Member following);
 }

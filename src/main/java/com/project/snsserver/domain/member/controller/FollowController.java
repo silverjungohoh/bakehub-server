@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.snsserver.domain.member.service.FollowService;
 import com.project.snsserver.domain.security.CustomUserDetails;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +28,21 @@ public class FollowController {
 
 	private final FollowService followService;
 
+	@Operation(summary = "회원 팔로우")
 	@PostMapping("/{nickname}/follow")
 	public ResponseEntity<Map<String, String>> follow(@PathVariable String nickname, @AuthenticationPrincipal
 	CustomUserDetails userDetails) {
 
 		Map<String, String> response = followService.follow(nickname, userDetails.getMember());
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+
+	@Operation(summary = "회원 팔로우 취소")
+	@DeleteMapping("/{nickname}/follow")
+	public ResponseEntity<Void> unfollow(@PathVariable String nickname,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		followService.unfollow(nickname, userDetails.getMember());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }
