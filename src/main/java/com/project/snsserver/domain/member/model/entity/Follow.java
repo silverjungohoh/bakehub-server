@@ -30,10 +30,10 @@ public class Follow extends BaseCreatedTimeEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "follower_id")
+	@JoinColumn(name = "follower_id", nullable = false)
 	private Member follower; // 팔로우를 하는 회원
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "following_id")
+	@JoinColumn(name = "following_id", nullable = false)
 	private Member following; // 팔로우를 받는 회원
 }
