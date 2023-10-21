@@ -4,8 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.project.snsserver.domain.member.model.entity.Follow;
 import com.project.snsserver.domain.member.model.entity.Member;
+import com.project.snsserver.domain.member.repository.jpa.custom.CustomFollowRepository;
 
-public interface FollowRepository extends JpaRepository<Follow, Long> {
+public interface FollowRepository extends JpaRepository<Follow, Long>, CustomFollowRepository {
 
 	boolean existsByFollowerAndFollowing(Member follower, Member following);
 

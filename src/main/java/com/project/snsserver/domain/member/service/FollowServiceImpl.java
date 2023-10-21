@@ -5,9 +5,12 @@ import static com.project.snsserver.global.error.type.MemberErrorCode.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.snsserver.domain.member.model.dto.FollowResponse;
 import com.project.snsserver.domain.member.model.entity.Follow;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.repository.jpa.FollowRepository;
@@ -30,7 +33,7 @@ public class FollowServiceImpl implements FollowService {
 		Member following = memberRepository.findByNickname(nickname)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-		if(followRepository.existsByFollowerAndFollowing(follower, following)) {
+		if (followRepository.existsByFollowerAndFollowing(follower, following)) {
 			throw new MemberException(ALREADY_FOLLOWING_MEMBER);
 		}
 
@@ -52,9 +55,14 @@ public class FollowServiceImpl implements FollowService {
 
 		Long result = followRepository.deleteByFollowerAndFollowing(follower, following);
 
-		if(result == 0) {
+		if (result == 0) {
 			throw new MemberException(FOLLOW_NOT_FOUND);
 		}
+	}
+
+	@Override
+	public Slice<FollowResponse> getMyFollowingList(Member member, Long lastId, Pageable pageable) {
+		return followRepository.findAllFollowingByMemberId(member.getId(), lastId, pageable);
 	}
 
 	private static Map<String, String> getMessage(String message) {

@@ -2,15 +2,21 @@ package com.project.snsserver.domain.member.controller;
 
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.snsserver.domain.member.model.dto.FollowResponse;
 import com.project.snsserver.domain.member.service.FollowService;
 import com.project.snsserver.domain.security.CustomUserDetails;
 
@@ -44,5 +50,14 @@ public class FollowController {
 
 		followService.unfollow(nickname, userDetails.getMember());
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@Operation(summary = "나의 팔로우 목록 조회")
+	@GetMapping("/following")
+	public ResponseEntity<Slice<FollowResponse>> getMyFollowingList(@PageableDefault Pageable pageable,
+		@RequestParam(required = false) Long followId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		Slice<FollowResponse> response = followService.getMyFollowingList(userDetails.getMember(), followId, pageable);
+		return ResponseEntity.ok(response);
 	}
 }
