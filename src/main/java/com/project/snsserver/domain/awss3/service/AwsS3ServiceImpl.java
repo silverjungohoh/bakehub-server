@@ -1,5 +1,7 @@
 package com.project.snsserver.domain.awss3.service;
 
+import static com.project.snsserver.global.error.type.CommonErrorCode.*;
+
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -7,8 +9,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.project.snsserver.domain.awss3.type.FileExtension;
-import com.project.snsserver.global.error.exception.ImageException;
-import com.project.snsserver.global.error.type.ImageErrorCode;
+import com.project.snsserver.global.error.exception.CommonException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +24,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.project.snsserver.global.error.type.ImageErrorCode.FAIL_TO_DELETE_IMAGE;
 
 @Slf4j
 @Service
@@ -54,7 +54,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
         } catch (IOException  | AmazonClientException e) {
             log.error("image upload fail : {}", e.getMessage());
-            throw new ImageException(ImageErrorCode.FAIL_TO_UPLOAD_IMAGE);
+            throw new CommonException(FAIL_TO_UPLOAD_IMAGE);
         }
         log.info("image upload success");
         return amazonS3.getUrl(bucket, dir + "/" + fileName).toString();
@@ -82,7 +82,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
             amazonS3.deleteObject(bucket, dir + "/" + imgUrl.substring(imgUrl.lastIndexOf("/") + 1));
         } catch (SdkClientException e) {
             log.error(e.getMessage());
-            throw new ImageException(FAIL_TO_DELETE_IMAGE);
+            throw new CommonException(FAIL_TO_DELETE_IMAGE);
         }
         log.info("image delete success");
     }
@@ -107,7 +107,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
 
         if (!extensions.contains(fileExtension)) {
-            throw new ImageException(ImageErrorCode.INVALID_IMAGE_TYPE);
+            throw new CommonException(INVALID_IMAGE_TYPE);
         }
 
         return fileName.substring(fileName.lastIndexOf("."));

@@ -1,6 +1,7 @@
 package com.project.snsserver.domain.member.repository.jpa;
 
 import com.project.snsserver.domain.member.model.entity.Member;
+import com.project.snsserver.domain.member.repository.jpa.custom.CustomMemberRepository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,4 +14,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
 	boolean existsByNickname(String nickname);
 
 	Optional<Member> findByEmail(String email);
+
+	Optional<Member> findByNickname(String nickname);
 }

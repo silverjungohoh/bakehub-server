@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.member.repository.jpa;
+package com.project.snsserver.domain.member.repository.jpa.custom;
 
 import com.project.snsserver.domain.member.model.dto.MemberDetailResponse;
 

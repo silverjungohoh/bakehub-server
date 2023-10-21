@@ -1,7 +1,6 @@
-package com.project.snsserver.domain.board.repository.jpa.impl;
+package com.project.snsserver.domain.board.repository.jpa.custom;
 
 import com.project.snsserver.domain.board.model.dto.PostHashtagResponse;
-import com.project.snsserver.domain.board.repository.jpa.CustomPostHashtagRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,7 @@ import java.util.List;
 import static com.project.snsserver.domain.board.model.entity.QHashtag.hashtag;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.board.model.entity.QPostHashtag.postHashtag;
-import static com.querydsl.core.types.Projections.bean;
+import static com.querydsl.core.types.Projections.*;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class CustomPostHashtagRepositoryImpl implements CustomPostHashtagReposit
 
 		return queryFactory
 			.select(
-				bean(PostHashtagResponse.class,
+				fields(PostHashtagResponse.class,
 					postHashtag.id.as("postHashtagId"),
 					hashtag.name.as("tagName")
 				)

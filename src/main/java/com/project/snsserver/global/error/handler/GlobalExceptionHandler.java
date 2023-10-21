@@ -1,11 +1,8 @@
 package com.project.snsserver.global.error.handler;
 
-import com.project.snsserver.global.error.exception.BoardException;
-import com.project.snsserver.global.error.exception.ImageException;
-import com.project.snsserver.global.error.exception.MemberException;
-import com.project.snsserver.global.error.model.ErrorResponse;
+import static com.project.snsserver.global.error.type.CommonErrorCode.*;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Objects;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,10 +10,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.util.Objects;
+import com.project.snsserver.global.error.exception.BoardException;
+import com.project.snsserver.global.error.exception.CommonException;
+import com.project.snsserver.global.error.exception.MemberException;
+import com.project.snsserver.global.error.model.ErrorResponse;
 
-import static com.project.snsserver.global.error.type.ErrorCode.INVALID_ARGUMENT;
-import static com.project.snsserver.global.error.type.ImageErrorCode.EXCEEDED_IMAGE_SIZE_LIMIT;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
@@ -34,8 +33,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
 	}
 
-	@ExceptionHandler(ImageException.class)
-	public ResponseEntity<ErrorResponse> handleImageException(ImageException e) {
+	@ExceptionHandler(CommonException.class)
+	public ResponseEntity<ErrorResponse> handleCommonException(CommonException e) {
 
 		ErrorResponse response = ErrorResponse.builder()
 			.status(e.getErrorCode().getStatus().value())

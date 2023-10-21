@@ -1,8 +1,7 @@
-package com.project.snsserver.domain.board.repository.jpa.impl;
+package com.project.snsserver.domain.board.repository.jpa.custom;
 
 import com.project.snsserver.domain.board.model.dto.PostDetailResponse;
 import com.project.snsserver.domain.board.model.dto.PostResponse;
-import com.project.snsserver.domain.board.repository.jpa.CustomPostRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -21,7 +20,7 @@ import static com.project.snsserver.domain.board.model.entity.QPostHashtag.postH
 import static com.project.snsserver.domain.board.model.entity.QPostHeart.postHeart;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
 import static com.querydsl.core.types.ExpressionUtils.as;
-import static com.querydsl.core.types.Projections.bean;
+import static com.querydsl.core.types.Projections.*;
 import static com.querydsl.core.types.dsl.Expressions.asBoolean;
 import static com.querydsl.jpa.JPAExpressions.select;
 
@@ -35,7 +34,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 		List<PostResponse> posts = queryFactory
 			.select(
-				bean(PostResponse.class,
+				fields(PostResponse.class,
 					post.id.as("postId"),
 					post.title.as("title"),
 					post.content.as("content"),
@@ -63,7 +62,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	public PostDetailResponse findPostByPostId(Long postId, Long memberId) {
 		return queryFactory
 			.select(
-				bean(PostDetailResponse.class,
+				fields(PostDetailResponse.class,
 					post.id.as("postId"),
 					post.title.as("title"),
 					post.content.as("content"),
@@ -94,7 +93,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	public Slice<PostResponse> findAllPostsByHashtag(Long lastPostId, String name, Pageable pageable) {
 
 		List<PostResponse> postsByHashtag = queryFactory.select(
-				bean(PostResponse.class,
+				fields(PostResponse.class,
 					post.id.as("postId"),
 					post.title.as("title"),
 					post.content.as("content"),

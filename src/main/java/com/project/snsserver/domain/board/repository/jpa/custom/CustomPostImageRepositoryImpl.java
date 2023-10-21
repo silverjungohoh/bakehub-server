@@ -1,7 +1,6 @@
-package com.project.snsserver.domain.board.repository.jpa.impl;
+package com.project.snsserver.domain.board.repository.jpa.custom;
 
 import com.project.snsserver.domain.board.model.dto.PostImageResponse;
-import com.project.snsserver.domain.board.repository.jpa.CustomPostImageRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,7 @@ import java.util.List;
 
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.board.model.entity.QPostImage.postImage;
-import static com.querydsl.core.types.Projections.bean;
+import static com.querydsl.core.types.Projections.*;
 import static com.querydsl.jpa.JPAExpressions.select;
 
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class CustomPostImageRepositoryImpl implements CustomPostImageRepository 
 	@Override
 	public List<PostImageResponse> findAllPostImageByPostId(Long postId) {
 		return queryFactory.select(
-				bean(PostImageResponse.class,
+				fields(PostImageResponse.class,
 					postImage.id.as("postImageId"),
 					postImage.postImageUrl.as("postImageUrl"),
 					postImage.createdAt.as("createdAt")

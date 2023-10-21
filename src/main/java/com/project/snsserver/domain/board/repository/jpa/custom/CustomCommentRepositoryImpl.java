@@ -1,7 +1,6 @@
-package com.project.snsserver.domain.board.repository.jpa.impl;
+package com.project.snsserver.domain.board.repository.jpa.custom;
 
 import com.project.snsserver.domain.board.model.dto.CommentResponse;
-import com.project.snsserver.domain.board.repository.jpa.CustomCommentRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -16,7 +15,7 @@ import java.util.List;
 import static com.project.snsserver.domain.board.model.entity.QComment.comment;
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
-import static com.querydsl.core.types.Projections.bean;
+import static com.querydsl.core.types.Projections.*;
 import static com.querydsl.core.types.dsl.Expressions.asBoolean;
 import static com.querydsl.jpa.JPAExpressions.select;
 
@@ -33,7 +32,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 		Pageable pageable) {
 
 		List<CommentResponse> comments = queryFactory.select(
-				bean(CommentResponse.class,
+				fields(CommentResponse.class,
 					comment.id.as("commentId"),
 					comment.content.as("content"),
 					member.nickname.as("nickname"),
