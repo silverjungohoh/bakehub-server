@@ -22,7 +22,7 @@ public class CustomFollowRepositoryImpl implements CustomFollowRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Slice<FollowResponse> findAllFollowingByMemberId(Long memberId, Long lastFollowId, Pageable pageable) {
+	public Slice<FollowResponse> findAllFollowingByMemberId(Long memberId, Long lastId, Pageable pageable) {
 		List<FollowResponse> followings
 			= queryFactory.select(
 				fields(FollowResponse.class,
@@ -33,12 +33,32 @@ public class CustomFollowRepositoryImpl implements CustomFollowRepository {
 				))
 			.from(follow)
 			.leftJoin(follow.following, member)
-			.where(lastFollowId(lastFollowId), follow.follower.id.eq(memberId))
+			.where(lastFollowId(lastId), follow.follower.id.eq(memberId))
 			.limit(pageable.getPageSize() + 1)
 			.orderBy(follow.createdAt.desc())
 			.fetch();
 
 		return checkLastPage(pageable, followings);
+	}
+
+	@Override
+	public Slice<FollowResponse> findAllFollowerByMemberId(Long memberId, Long lastId, Pageable pageable) {
+		List<FollowResponse> followers
+			= queryFactory.select(
+				fields(FollowResponse.class,
+					follow.id.as("followId"),
+					member.profileImgUrl.as("profileImgUrl"),
+					member.nickname.as("nickname"),
+					member.email.as("email")
+				))
+			.from(follow)
+			.leftJoin(follow.follower, member)
+			.where(lastFollowId(lastId), follow.following.id.eq(memberId))
+			.limit(pageable.getPageSize() + 1)
+			.orderBy(follow.createdAt.desc())
+			.fetch();
+
+		return checkLastPage(pageable, followers);
 	}
 
 	private BooleanExpression lastFollowId(Long lastFollowId) {

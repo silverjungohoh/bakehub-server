@@ -23,5 +23,10 @@ public interface FollowService {
 	/**
 	 * 나의 팔로잉 회원 목록 조회
 	 */
-	Slice<FollowResponse> getMyFollowingList(Member member, Long lastFollowId, Pageable pageable);
+	Slice<FollowResponse> getMyFollowingList(Member member, Long lastId, Pageable pageable);
+
+	/**
+	 * 나의 팔로워 회원 목록 조회
+	 */
+	Slice<FollowResponse> getMyFollowerList(Member member, Long lastId, Pageable pageable);
 }

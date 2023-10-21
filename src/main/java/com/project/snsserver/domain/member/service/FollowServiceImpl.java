@@ -65,6 +65,11 @@ public class FollowServiceImpl implements FollowService {
 		return followRepository.findAllFollowingByMemberId(member.getId(), lastId, pageable);
 	}
 
+	@Override
+	public Slice<FollowResponse> getMyFollowerList(Member member, Long lastId, Pageable pageable) {
+		return followRepository.findAllFollowerByMemberId(member.getId(), lastId, pageable);
+	}
+
 	private static Map<String, String> getMessage(String message) {
 		Map<String, String> result = new HashMap<>();
 		result.put("result", message);

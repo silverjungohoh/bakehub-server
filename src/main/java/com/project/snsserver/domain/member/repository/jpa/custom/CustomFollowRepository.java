@@ -11,5 +11,10 @@ public interface CustomFollowRepository {
 	 * 나의 팔로잉 회원 목록 조회
 	 */
 	Slice<FollowResponse> findAllFollowingByMemberId(Long memberId, Long lastId, Pageable pageable);
+
+	/**
+	 * 나의 팔로워 회원 목록 조회
+	 */
+	Slice<FollowResponse> findAllFollowerByMemberId(Long memberId, Long lastId, Pageable pageable);
 }
 

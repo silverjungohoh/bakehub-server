@@ -52,12 +52,21 @@ public class FollowController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@Operation(summary = "나의 팔로우 목록 조회")
+	@Operation(summary = "나의 팔로잉 목록 조회")
 	@GetMapping("/following")
 	public ResponseEntity<Slice<FollowResponse>> getMyFollowingList(@PageableDefault Pageable pageable,
 		@RequestParam(required = false) Long followId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		Slice<FollowResponse> response = followService.getMyFollowingList(userDetails.getMember(), followId, pageable);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "나의 팔로워 목록 조회")
+	@GetMapping("/follower")
+	public ResponseEntity<Slice<FollowResponse>> getMyFollowerList(@PageableDefault Pageable pageable,
+		@RequestParam(required = false) Long followId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		Slice<FollowResponse> response = followService.getMyFollowerList(userDetails.getMember(), followId, pageable);
 		return ResponseEntity.ok(response);
 	}
 }
