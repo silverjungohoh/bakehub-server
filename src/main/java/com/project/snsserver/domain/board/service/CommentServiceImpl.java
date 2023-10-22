@@ -106,7 +106,7 @@ public class CommentServiceImpl implements CommentService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-		return commentRepository.findCommentAllByPostId(post.getId(), lastCommentId, email, pageable);
+		return commentRepository.findAllCommentByPostId(post.getId(), lastCommentId, email, pageable);
 	}
 
 	private static Map<String, String> getMessage(String message) {

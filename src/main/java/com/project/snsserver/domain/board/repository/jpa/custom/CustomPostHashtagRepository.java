@@ -8,7 +8,7 @@ public interface CustomPostHashtagRepository {
 
 	List<PostHashtagResponse> findAllPostHashtagByPostId(Long postId);
 
-	Long deletePostHashtagAllByPostId(Long postId);
+	Long deleteAllPostHashtagByPostId(Long postId);
 
 	Long deletePostHashtagAllInPostIdsByMemberId(Long memberId);
 }

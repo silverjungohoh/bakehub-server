@@ -8,11 +8,11 @@ import org.springframework.data.domain.Slice;
 
 public interface CustomPostRepository {
 
-	Slice<PostResponse> findAllPostsWithCommentCntAndHeartCnt(Long lastPostId, Pageable pageable);
+	Slice<PostResponse> findAllPost(Long lastPostId, Pageable pageable);
 
 	PostDetailResponse findPostByPostId(Long postId, Long memberId);
 
-	Slice<PostResponse> findAllPostsByHashtag(Long lastPostId, String name, Pageable pageable);
+	Slice<PostResponse> findAllPostByHashtag(Long lastPostId, String name, Pageable pageable);
 
 	Long deleteAllPostByMemberId(Long memberId);
 }

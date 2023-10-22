@@ -268,19 +268,19 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		// 회원이 작성한 댓글, 좋아요 삭제
-		commentRepository.deleteCommentAllByMemberId(member.getId());
-		postHeartRepository.deletePostHeartAllByMemberId(member.getId());
+		commentRepository.deleteAlCommentByMemberId(member.getId());
+		postHeartRepository.deleteAllPostHeartByMemberId(member.getId());
 
 		// 회원의 게시물에 달린 댓글, 좋아요, 해시태그 삭제
-		commentRepository.deleteCommentAllInPostIdsByMemberId(member.getId());
-		postHeartRepository.deletePostHeartAllInPostIdsByMemberId(member.getId());
+		commentRepository.deleteAllCommentInPostIdsByMemberId(member.getId());
+		postHeartRepository.deleteAllPostHeartInPostIdsByMemberId(member.getId());
 		postHashtagRepository.deletePostHashtagAllInPostIdsByMemberId(member.getId());
 
 		// 회원의 게시물 이미지 삭제
 		postImageRepository.deleteAllPostImageInPostIdsByMemberId(member.getId());
 
 		// 회원의 알림 전체 삭제
-		notificationRepository.deleteNotificationAllByMemberId(member.getId());
+		notificationRepository.deleteAllNotificationByMemberId(member.getId());
 
 		// 회원의 게시물 전체 삭제
 		postRepository.deleteAllPostByMemberId(member.getId());

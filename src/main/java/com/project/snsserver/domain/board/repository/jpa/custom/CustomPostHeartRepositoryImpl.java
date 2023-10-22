@@ -14,20 +14,20 @@ public class CustomPostHeartRepositoryImpl implements CustomPostHeartRepository 
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Long deletePostHeartAllByPostId(Long postId) {
+	public Long deleteAllPostHeartByPostId(Long postId) {
 		return queryFactory.delete(postHeart)
 			.where(postHeart.post.id.eq(postId))
 			.execute();
 	}
 
 	@Override
-	public Long deletePostHeartAllByMemberId(Long memberId) {
+	public Long deleteAllPostHeartByMemberId(Long memberId) {
 		return queryFactory.delete(postHeart)
 			.where(postHeart.member.id.eq(memberId))
 			.execute();
 	}
 
-	public Long deletePostHeartAllInPostIdsByMemberId(Long memberId) {
+	public Long deleteAllPostHeartInPostIdsByMemberId(Long memberId) {
 		return queryFactory.delete(postHeart)
 			.where(postHeart.post.id.in(select(post.id).from(post).where(post.member.id.eq(memberId))))
 			.execute();
