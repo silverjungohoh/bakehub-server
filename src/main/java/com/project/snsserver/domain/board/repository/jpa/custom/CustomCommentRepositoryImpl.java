@@ -28,7 +28,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	 * 특정 게시물의 댓글 조회
 	 */
 	@Override
-	public Slice<CommentResponse> findCommentAllByPostId(Long postId, Long lastCommentId, String email,
+	public Slice<CommentResponse> findAllCommentByPostId(Long postId, Long lastCommentId, String email,
 		Pageable pageable) {
 
 		List<CommentResponse> comments = queryFactory.select(
@@ -55,20 +55,20 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	 * 특정 게시물의 댓글 전체 삭제
 	 */
 	@Override
-	public Long deleteCommentAllByPostId(Long postId) {
+	public Long deleteAllCommentByPostId(Long postId) {
 		return queryFactory.delete(comment)
 			.where(comment.post.id.eq(postId))
 			.execute();
 	}
 
 	@Override
-	public Long deleteCommentAllByMemberId(Long memberId) {
+	public Long deleteAlCommentByMemberId(Long memberId) {
 		return queryFactory.delete(comment)
 			.where(comment.member.id.eq(memberId))
 			.execute();
 	}
 
-	public Long deleteCommentAllInPostIdsByMemberId(Long memberId) {
+	public Long deleteAllCommentInPostIdsByMemberId(Long memberId) {
 		return queryFactory.delete(comment)
 			.where(comment.post.id.in(
 					select(post.id).from(post).where(post.member.id.eq(memberId))

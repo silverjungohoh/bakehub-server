@@ -26,7 +26,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 	 * 회원의 알림 목록 조회
 	 */
 	@Override
-	public Slice<NotificationResponse> findNotificationAllByMemberId(Long memberId, Long lastNotificationId,
+	public Slice<NotificationResponse> findAllNotificationByMemberId(Long memberId, Long lastNotificationId,
 		Pageable pageable) {
 
 		List<Notification> notifications = queryFactory.selectFrom(notification)
@@ -43,7 +43,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 	}
 
 	@Override
-	public Long deleteNotificationAllByMemberId(Long memberId) {
+	public Long deleteAllNotificationByMemberId(Long memberId) {
 		return queryFactory.delete(notification)
 			.where(notification.member.id.eq(memberId))
 			.execute();

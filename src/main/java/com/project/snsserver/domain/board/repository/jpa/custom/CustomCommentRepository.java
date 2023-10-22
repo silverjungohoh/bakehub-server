@@ -7,11 +7,11 @@ import org.springframework.data.domain.Slice;
 
 public interface CustomCommentRepository {
 
-	Slice<CommentResponse> findCommentAllByPostId(Long postId, Long lastCommentId, String email, Pageable pageable);
+	Slice<CommentResponse> findAllCommentByPostId(Long postId, Long lastCommentId, String email, Pageable pageable);
 
-	Long deleteCommentAllByPostId(Long postId);
+	Long deleteAllCommentByPostId(Long postId);
 
-	Long deleteCommentAllByMemberId(Long memberId);
+	Long deleteAlCommentByMemberId(Long memberId);
 
-	Long deleteCommentAllInPostIdsByMemberId(Long memberId);
+	Long deleteAllCommentInPostIdsByMemberId(Long memberId);
 }

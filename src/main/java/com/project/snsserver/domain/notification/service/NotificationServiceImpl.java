@@ -58,9 +58,9 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Slice<NotificationResponse> getNotificationsByMember(Pageable pageable, Member member,
+	public Slice<NotificationResponse> getMyNotificationList(Pageable pageable, Member member,
 		Long lastNotificationId) {
 		return notificationRepository
-			.findNotificationAllByMemberId(member.getId(), lastNotificationId, pageable);
+			.findAllNotificationByMemberId(member.getId(), lastNotificationId, pageable);
 	}
 }

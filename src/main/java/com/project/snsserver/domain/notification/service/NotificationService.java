@@ -14,5 +14,5 @@ public interface NotificationService {
 	/**
 	 * 회원의 알림 목록 조회
 	 */
-	Slice<NotificationResponse> getNotificationsByMember(Pageable pageable, Member member, Long lastNotificationId);
+	Slice<NotificationResponse> getMyNotificationList(Pageable pageable, Member member, Long lastNotificationId);
 }

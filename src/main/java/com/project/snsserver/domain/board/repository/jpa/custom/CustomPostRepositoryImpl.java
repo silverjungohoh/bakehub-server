@@ -30,7 +30,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Slice<PostResponse> findAllPostsWithCommentCntAndHeartCnt(Long lastPostId, Pageable pageable) {
+	public Slice<PostResponse> findAllPost(Long lastPostId, Pageable pageable) {
 
 		List<PostResponse> posts = queryFactory
 			.select(
@@ -90,7 +90,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public Slice<PostResponse> findAllPostsByHashtag(Long lastPostId, String name, Pageable pageable) {
+	public Slice<PostResponse> findAllPostByHashtag(Long lastPostId, String name, Pageable pageable) {
 
 		List<PostResponse> postsByHashtag = queryFactory.select(
 				fields(PostResponse.class,

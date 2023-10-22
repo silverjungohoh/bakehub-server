@@ -1,17 +1,22 @@
 package com.project.snsserver.domain.board.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.project.snsserver.domain.board.model.dto.PostHeartResponse;
 import com.project.snsserver.domain.board.service.PostHeartService;
-import com.project.snsserver.domain.security.CustomUserDetails;
+import com.project.snsserver.domain.member.model.entity.Member;
+import com.project.snsserver.global.util.AuthMember;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -26,10 +31,9 @@ public class PostHeartController {
 	 */
 	@Operation(summary = "게시물 좋아요 등록")
 	@PostMapping("/{postId}/hearts")
-	public ResponseEntity<Void> pushHeart(@PathVariable Long postId,
-		@AuthenticationPrincipal CustomUserDetails userDetails) {
+	public ResponseEntity<Void> pushHeart(@PathVariable Long postId, @AuthMember Member member) {
 
-		postHeartService.pushHeart(postId, userDetails.getMember());
+		postHeartService.pushHeart(postId, member);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
@@ -39,9 +43,9 @@ public class PostHeartController {
 	@Operation(summary = "게시물 좋아요 취소")
 	@DeleteMapping("/{postId}/hearts/{postHeartId}")
 	public ResponseEntity<Void> cancelHeart(@PathVariable Long postId, @PathVariable Long postHeartId,
-		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		@AuthMember Member member) {
 
-		postHeartService.cancelHeart(postId, postHeartId, userDetails.getMember());
+		postHeartService.cancelHeart(postId, postHeartId, member);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

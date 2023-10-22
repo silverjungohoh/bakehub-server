@@ -85,7 +85,7 @@ public class PostServiceImpl implements PostService {
 		}
 
 		// 해당 게시물의 모든 해시태그 삭제 후 입력 받은 해시태그 생성
-		postHashtagRepository.deletePostHashtagAllByPostId(post.getId());
+		postHashtagRepository.deleteAllPostHashtagByPostId(post.getId());
 
 		if (!Objects.isNull(request.getTagNames())) {
 			postHashtagService.createPostHashtag(post, request.getTagNames());
@@ -115,10 +115,10 @@ public class PostServiceImpl implements PostService {
 			postImages.forEach((postImage -> awsS3Service.deleteFile(postImage.getPostImageUrl(), DIR)));
 		}
 
-		commentRepository.deleteCommentAllByPostId(postId);
-		postHeartRepository.deletePostHeartAllByPostId(postId);
+		commentRepository.deleteAllCommentByPostId(postId);
+		postHeartRepository.deleteAllPostHeartByPostId(postId);
 		postImageRepository.deleteAllPostImageByPostId(postId);
-		postHashtagRepository.deletePostHashtagAllByPostId(postId);
+		postHashtagRepository.deleteAllPostHashtagByPostId(postId);
 
 		postRepository.delete(post);
 		return getMessage("게시물이 삭제되었습니다.");
@@ -162,7 +162,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	@Transactional(readOnly = true)
 	public Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable) {
-		return postRepository.findAllPostsWithCommentCntAndHeartCnt(lastPostId, pageable);
+		return postRepository.findAllPost(lastPostId, pageable);
 	}
 
 	@Override
@@ -195,7 +195,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	@Transactional(readOnly = true)
 	public Slice<PostResponse> getPostsByHashtag(Long lastPostId, String tag, Pageable pageable) {
-		return postRepository.findAllPostsByHashtag(lastPostId, tag, pageable);
+		return postRepository.findAllPostByHashtag(lastPostId, tag, pageable);
 	}
 
 	private static Map<String, String> getMessage(String message) {
