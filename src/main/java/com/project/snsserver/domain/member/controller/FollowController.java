@@ -67,4 +67,13 @@ public class FollowController {
 		Slice<FollowResponse> response = followService.getMyFollowerList(member, lastFollowId, pageable);
 		return ResponseEntity.ok(response);
 	}
+
+	@Operation(summary = "특정 회원의 팔로잉 목록 조회")
+	@GetMapping("/{memberId}/following")
+	public ResponseEntity<Slice<FollowResponse>> getFollowingList(@PageableDefault Pageable pageable,
+		@PathVariable Long memberId, @RequestParam(required = false) Long lastFollowId) {
+
+		Slice<FollowResponse> response = followService.getFollowingList(memberId, lastFollowId, pageable);
+		return ResponseEntity.ok(response);
+	}
 }

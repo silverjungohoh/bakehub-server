@@ -61,13 +61,20 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Slice<FollowResponse> getMyFollowingList(Member member, Long lastId, Pageable pageable) {
 		return followRepository.findAllFollowingByMemberId(member.getId(), lastId, pageable);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Slice<FollowResponse> getMyFollowerList(Member member, Long lastId, Pageable pageable) {
 		return followRepository.findAllFollowerByMemberId(member.getId(), lastId, pageable);
+	}
+
+	@Override
+	public Slice<FollowResponse> getFollowingList(Long memberId, Long lastId, Pageable pageable) {
+		return followRepository.findAllFollowingByMemberId(memberId, lastId, pageable);
 	}
 
 	private static Map<String, String> getMessage(String message) {

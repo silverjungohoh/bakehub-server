@@ -11,6 +11,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
 import com.project.snsserver.domain.member.model.dto.response.FollowResponse;
+import com.querydsl.core.types.QBean;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -24,13 +25,7 @@ public class CustomFollowRepositoryImpl implements CustomFollowRepository {
 	@Override
 	public Slice<FollowResponse> findAllFollowingByMemberId(Long memberId, Long lastId, Pageable pageable) {
 		List<FollowResponse> followings
-			= queryFactory.select(
-				fields(FollowResponse.class,
-					follow.id.as("followId"),
-					member.profileImgUrl.as("profileImgUrl"),
-					member.nickname.as("nickname"),
-					member.email.as("email")
-				))
+			= queryFactory.select(getFollowResponse())
 			.from(follow)
 			.leftJoin(follow.following, member)
 			.where(lastFollowId(lastId), follow.follower.id.eq(memberId))
@@ -44,13 +39,7 @@ public class CustomFollowRepositoryImpl implements CustomFollowRepository {
 	@Override
 	public Slice<FollowResponse> findAllFollowerByMemberId(Long memberId, Long lastId, Pageable pageable) {
 		List<FollowResponse> followers
-			= queryFactory.select(
-				fields(FollowResponse.class,
-					follow.id.as("followId"),
-					member.profileImgUrl.as("profileImgUrl"),
-					member.nickname.as("nickname"),
-					member.email.as("email")
-				))
+			= queryFactory.select(getFollowResponse())
 			.from(follow)
 			.leftJoin(follow.follower, member)
 			.where(lastFollowId(lastId), follow.following.id.eq(memberId))
@@ -61,6 +50,15 @@ public class CustomFollowRepositoryImpl implements CustomFollowRepository {
 		return checkLastPage(pageable, followers);
 	}
 
+	private QBean<FollowResponse> getFollowResponse() {
+		return fields(FollowResponse.class,
+			follow.id.as("followId"),
+			member.profileImgUrl.as("profileImgUrl"),
+			member.nickname.as("nickname"),
+			member.email.as("email")
+		);
+	}
+
 	private BooleanExpression lastFollowId(Long lastFollowId) {
 		if (lastFollowId == null) {
 			return null;
@@ -68,14 +66,14 @@ public class CustomFollowRepositoryImpl implements CustomFollowRepository {
 		return follow.id.lt(lastFollowId);
 	}
 
-	private Slice<FollowResponse> checkLastPage(Pageable pageable, List<FollowResponse> followings) {
+	private <T> Slice<T> checkLastPage(Pageable pageable, List<T> response) {
 		boolean hasNext = false;
 
-		if (followings.size() > pageable.getPageSize()) {
+		if (response.size() > pageable.getPageSize()) {
 			hasNext = true;
-			followings.remove(pageable.getPageSize());
+			response.remove(pageable.getPageSize());
 		}
 
-		return new SliceImpl<>(followings, pageable, hasNext);
+		return new SliceImpl<>(response, pageable, hasNext);
 	}
 }
