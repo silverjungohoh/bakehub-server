@@ -34,4 +34,9 @@ public interface FollowService {
 	 * 특정 회원의 팔로잉 목록 조회
 	 */
 	Slice<FollowResponse> getFollowingList(Long memberId, Long lastId, Pageable pageable);
+
+	/**
+	 * 특정 회원의 팔로워 목록 조회
+	 */
+	Slice<FollowResponse> getFollowerList(Long memberId, Long lastFollowId, Pageable pageable);
 }
