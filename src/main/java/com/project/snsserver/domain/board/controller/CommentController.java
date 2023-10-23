@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.snsserver.domain.board.model.dto.CommentResponse;
-import com.project.snsserver.domain.board.model.dto.EditCommentRequest;
-import com.project.snsserver.domain.board.model.dto.EditCommentResponse;
+import com.project.snsserver.domain.board.model.dto.response.CommentResponse;
+import com.project.snsserver.domain.board.model.dto.request.EditCommentRequest;
+import com.project.snsserver.domain.board.model.dto.response.EditCommentResponse;
 import com.project.snsserver.domain.board.service.CommentService;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.util.AuthMember;

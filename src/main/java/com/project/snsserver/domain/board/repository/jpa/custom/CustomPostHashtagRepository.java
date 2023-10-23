@@ -1,6 +1,6 @@
 package com.project.snsserver.domain.board.repository.jpa.custom;
 
-import com.project.snsserver.domain.board.model.dto.PostHashtagResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostHashtagResponse;
 
 import java.util.List;
 

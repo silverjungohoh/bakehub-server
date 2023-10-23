@@ -1,7 +1,7 @@
 package com.project.snsserver.domain.board.repository.jpa.custom;
 
-import com.project.snsserver.domain.board.model.dto.PostDetailResponse;
-import com.project.snsserver.domain.board.model.dto.PostResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostDetailResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostResponse;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

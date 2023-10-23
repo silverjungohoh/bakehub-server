@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.snsserver.domain.member.model.dto.FollowResponse;
+import com.project.snsserver.domain.member.model.dto.response.FollowResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.service.FollowService;
 import com.project.snsserver.global.util.AuthMember;

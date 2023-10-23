@@ -10,7 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.project.snsserver.domain.member.model.dto.FollowResponse;
+import com.project.snsserver.domain.member.model.dto.response.FollowResponse;
 import com.project.snsserver.domain.member.model.entity.Follow;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.repository.jpa.FollowRepository;

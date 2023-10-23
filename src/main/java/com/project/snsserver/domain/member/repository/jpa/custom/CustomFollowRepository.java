@@ -3,7 +3,7 @@ package com.project.snsserver.domain.member.repository.jpa.custom;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
-import com.project.snsserver.domain.member.model.dto.FollowResponse;
+import com.project.snsserver.domain.member.model.dto.response.FollowResponse;
 
 public interface CustomFollowRepository {
 
