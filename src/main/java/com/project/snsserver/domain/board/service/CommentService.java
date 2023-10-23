@@ -1,8 +1,8 @@
 package com.project.snsserver.domain.board.service;
 
-import com.project.snsserver.domain.board.model.dto.CommentResponse;
-import com.project.snsserver.domain.board.model.dto.EditCommentRequest;
-import com.project.snsserver.domain.board.model.dto.EditCommentResponse;
+import com.project.snsserver.domain.board.model.dto.response.CommentResponse;
+import com.project.snsserver.domain.board.model.dto.request.EditCommentRequest;
+import com.project.snsserver.domain.board.model.dto.response.EditCommentResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
 
 import org.springframework.data.domain.Pageable;

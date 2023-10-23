@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.board.model.dto;
+package com.project.snsserver.domain.board.model.dto.response;
 
 import com.project.snsserver.domain.board.model.entity.PostImage;
 

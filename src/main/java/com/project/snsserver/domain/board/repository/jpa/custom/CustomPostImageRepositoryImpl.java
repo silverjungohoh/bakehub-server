@@ -1,6 +1,6 @@
 package com.project.snsserver.domain.board.repository.jpa.custom;
 
-import com.project.snsserver.domain.board.model.dto.PostImageResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostImageResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;

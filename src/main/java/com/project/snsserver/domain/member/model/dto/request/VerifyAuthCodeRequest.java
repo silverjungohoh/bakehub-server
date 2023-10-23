@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.member.model.dto;
+package com.project.snsserver.domain.member.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FollowResponse {
-
-	private Long followId;
-
-	private String profileImgUrl;
-
-	private String nickname;
+public class VerifyAuthCodeRequest {
 
 	private String email;
+
+	private String code;
 }

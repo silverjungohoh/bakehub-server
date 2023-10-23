@@ -1,6 +1,6 @@
 package com.project.snsserver.domain.board.repository.jpa.custom;
 
-import com.project.snsserver.domain.board.model.dto.CommentResponse;
+import com.project.snsserver.domain.board.model.dto.response.CommentResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 

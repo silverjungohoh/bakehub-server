@@ -10,7 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.project.snsserver.domain.member.model.dto.FollowResponse;
+import com.project.snsserver.domain.member.model.dto.response.FollowResponse;
 import com.project.snsserver.domain.member.model.entity.Follow;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.repository.jpa.FollowRepository;
@@ -61,13 +61,25 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Slice<FollowResponse> getMyFollowingList(Member member, Long lastId, Pageable pageable) {
 		return followRepository.findAllFollowingByMemberId(member.getId(), lastId, pageable);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Slice<FollowResponse> getMyFollowerList(Member member, Long lastId, Pageable pageable) {
 		return followRepository.findAllFollowerByMemberId(member.getId(), lastId, pageable);
+	}
+
+	@Override
+	public Slice<FollowResponse> getFollowingList(Long memberId, Long lastId, Pageable pageable) {
+		return followRepository.findAllFollowingByMemberId(memberId, lastId, pageable);
+	}
+
+	@Override
+	public Slice<FollowResponse> getFollowerList(Long memberId, Long lastFollowId, Pageable pageable) {
+		return followRepository.findAllFollowerByMemberId(memberId, lastFollowId, pageable);
 	}
 
 	private static Map<String, String> getMessage(String message) {

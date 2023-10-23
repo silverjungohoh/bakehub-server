@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.snsserver.domain.board.model.dto.PostHeartResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostHeartResponse;
 import com.project.snsserver.domain.board.service.PostHeartService;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.util.AuthMember;

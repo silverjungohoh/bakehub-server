@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.snsserver.domain.board.model.dto.EditPostRequest;
-import com.project.snsserver.domain.board.model.dto.EditPostResponse;
-import com.project.snsserver.domain.board.model.dto.PostDetailResponse;
-import com.project.snsserver.domain.board.model.dto.PostHashtagResponse;
-import com.project.snsserver.domain.board.model.dto.PostImageResponse;
-import com.project.snsserver.domain.board.model.dto.PostResponse;
+import com.project.snsserver.domain.board.model.dto.request.EditPostRequest;
+import com.project.snsserver.domain.board.model.dto.response.EditPostResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostDetailResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostHashtagResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostImageResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostResponse;
 import com.project.snsserver.domain.board.service.PostService;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.util.AuthMember;

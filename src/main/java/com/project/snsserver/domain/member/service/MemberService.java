@@ -1,6 +1,17 @@
 package com.project.snsserver.domain.member.service;
 
-import com.project.snsserver.domain.member.model.dto.*;
+import com.project.snsserver.domain.member.model.dto.request.LoginRequest;
+import com.project.snsserver.domain.member.model.dto.request.LogoutRequest;
+import com.project.snsserver.domain.member.model.dto.request.SignUpRequest;
+import com.project.snsserver.domain.member.model.dto.request.UpdateNicknameRequest;
+import com.project.snsserver.domain.member.model.dto.request.UpdatePasswordRequest;
+import com.project.snsserver.domain.member.model.dto.request.VerifyAuthCodeRequest;
+import com.project.snsserver.domain.member.model.dto.request.WithdrawRequest;
+import com.project.snsserver.domain.member.model.dto.response.LoginResponse;
+import com.project.snsserver.domain.member.model.dto.response.MemberDetailResponse;
+import com.project.snsserver.domain.member.model.dto.response.ProfileResponse;
+import com.project.snsserver.domain.member.model.dto.response.ReissueTokenResponse;
+import com.project.snsserver.domain.member.model.dto.response.SignUpResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
 
 import org.springframework.web.multipart.MultipartFile;

@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.member.model.dto;
+package com.project.snsserver.domain.member.model.dto.request;
 
 import com.project.snsserver.domain.member.type.Gender;
 

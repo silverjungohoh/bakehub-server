@@ -1,7 +1,12 @@
 package com.project.snsserver.domain.board.service;
 
 import com.project.snsserver.domain.awss3.service.AwsS3Service;
-import com.project.snsserver.domain.board.model.dto.*;
+import com.project.snsserver.domain.board.model.dto.request.EditPostRequest;
+import com.project.snsserver.domain.board.model.dto.response.EditPostResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostDetailResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostHashtagResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostImageResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
 import com.project.snsserver.domain.board.repository.jpa.*;

@@ -1,6 +1,6 @@
 package com.project.snsserver.domain.board.service;
 
-import com.project.snsserver.domain.board.model.dto.PostHeartResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostHeartResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostHeart;
 import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;

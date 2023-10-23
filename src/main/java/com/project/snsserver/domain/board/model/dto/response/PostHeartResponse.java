@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.board.model.dto;
+package com.project.snsserver.domain.board.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

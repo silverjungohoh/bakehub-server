@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.member.model.dto;
+package com.project.snsserver.domain.member.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VerifyAuthCodeRequest {
+public class SendAuthCodeRequest {
 
 	private String email;
-
-	private String code;
 }
