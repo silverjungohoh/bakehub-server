@@ -40,7 +40,7 @@ public class NotificationController {
 	public ResponseBodyEmitter connect(@AuthMember Member member) {
 
 		var sseConnection
-			= SseConnection.connect(member.getEmail(), sseConnectionPool, objectMapper);
+			= SseConnection.connect(member.getNickname(), sseConnectionPool, objectMapper);
 
 		sseConnectionPool.add(sseConnection.getUniqueKey(), sseConnection);
 		return sseConnection.getSseEmitter();

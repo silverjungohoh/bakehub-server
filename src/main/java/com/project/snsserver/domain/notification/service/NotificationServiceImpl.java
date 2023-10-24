@@ -33,21 +33,22 @@ public class NotificationServiceImpl implements NotificationService {
 	public void send(NotificationMessage message) {
 
 		// save notification
-		String receiver = message.getReceiver();
+		String nickname = message.getNickname();
 
-		Member member = memberRepository.findByEmail(receiver)
+		Member receiver = memberRepository.findByNickname(nickname)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
 		Notification notification = Notification.builder()
-			.notificationType(message.getType())
-			.content(message.getContent())
-			.member(member)
+			.type(message.getType())
+			.content(String.format(message.getType().getText(), nickname))
+			.relatedUrl(String.format("/post/%d", message.getTargetId()))
+			.member(receiver)
 			.build();
 
 		notificationRepository.save(notification);
 
 		var sseConnection
-			= sseConnectionPool.get(receiver);
+			= sseConnectionPool.get(nickname);
 
 		NotificationResponse response
 			= NotificationResponse.fromEntity(notification);
@@ -60,7 +61,6 @@ public class NotificationServiceImpl implements NotificationService {
 	@Transactional(readOnly = true)
 	public Slice<NotificationResponse> getMyNotificationList(Pageable pageable, Member member,
 		Long lastNotificationId) {
-		return notificationRepository
-			.findAllNotificationByMemberId(member.getId(), lastNotificationId, pageable);
+		return notificationRepository.findAllNotificationByMemberId(member.getId(), lastNotificationId, pageable);
 	}
 }

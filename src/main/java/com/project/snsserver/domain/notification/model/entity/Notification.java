@@ -24,9 +24,11 @@ public class Notification extends BaseCreatedTimeEntity {
 	private String content;
 
 	@Enumerated(EnumType.STRING)
-	private NotificationType notificationType;
+	private NotificationType type;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", updatable = false)
 	private Member member;
+
+	private String relatedUrl;
 }

@@ -21,7 +21,7 @@ public class SseConnectionPool implements ConnectionPool<String, SseConnection> 
 	}
 
 	@Override
-	public void delete(SseConnection session) {
-		connectionPool.remove(session.getUniqueKey());
+	public void delete(SseConnection sseConnection) {
+		connectionPool.remove(sseConnection.getUniqueKey());
 	}
 }

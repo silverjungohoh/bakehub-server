@@ -21,13 +21,16 @@ public class NotificationResponse {
 
 	private String content;
 
+	private String relatedUrl;
+
 	private LocalDateTime createdAt;
 
 	public static NotificationResponse fromEntity(Notification notification) {
 		return NotificationResponse.builder()
 			.notificationId(notification.getId())
-			.type(notification.getNotificationType().name())
+			.type(notification.getType().name())
 			.content(notification.getContent())
+			.relatedUrl(notification.getRelatedUrl())
 			.createdAt(notification.getCreatedAt())
 			.build();
 	}

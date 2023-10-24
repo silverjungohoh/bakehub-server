@@ -1,7 +1,19 @@
 package com.project.snsserver.domain.board.service;
 
-import com.project.snsserver.domain.board.model.dto.response.CommentResponse;
+import static com.project.snsserver.domain.notification.type.NotificationType.*;
+import static com.project.snsserver.global.error.type.BoardErrorCode.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.snsserver.domain.board.model.dto.request.EditCommentRequest;
+import com.project.snsserver.domain.board.model.dto.response.CommentResponse;
 import com.project.snsserver.domain.board.model.dto.response.EditCommentResponse;
 import com.project.snsserver.domain.board.model.entity.Comment;
 import com.project.snsserver.domain.board.model.entity.Post;
@@ -13,19 +25,6 @@ import com.project.snsserver.domain.notification.rabbitmq.NotificationProducer;
 import com.project.snsserver.global.error.exception.BoardException;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import static com.project.snsserver.domain.notification.type.NotificationType.NEW_COMMENT;
-import static com.project.snsserver.global.error.type.BoardErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,10 +50,9 @@ public class CommentServiceImpl implements CommentService {
 		commentRepository.save(comment);
 
 		NotificationMessage message = NotificationMessage.builder()
-			.receiver(post.getMember().getEmail())
+			.nickname(post.getMember().getNickname())
 			.type(NEW_COMMENT)
-			.content(String.format(NEW_COMMENT.getValue(), member.getNickname()))
-			.createdAt(Timestamp.valueOf(comment.getCreatedAt()))
+			.targetId(postId)
 			.build();
 
 		notificationProducer.produce(message);

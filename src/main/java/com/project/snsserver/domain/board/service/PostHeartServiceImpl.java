@@ -1,5 +1,13 @@
 package com.project.snsserver.domain.board.service;
 
+import static com.project.snsserver.domain.notification.type.NotificationType.*;
+import static com.project.snsserver.global.error.type.BoardErrorCode.*;
+
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.snsserver.domain.board.model.dto.response.PostHeartResponse;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostHeart;
@@ -11,15 +19,6 @@ import com.project.snsserver.domain.notification.rabbitmq.NotificationProducer;
 import com.project.snsserver.global.error.exception.BoardException;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Timestamp;
-import java.util.Objects;
-
-import static com.project.snsserver.domain.notification.type.NotificationType.NEW_HEART;
-import static com.project.snsserver.global.error.type.BoardErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,10 +51,9 @@ public class PostHeartServiceImpl implements PostHeartService {
 		postHeartRepository.save(heart);
 
 		NotificationMessage message = NotificationMessage.builder()
-			.receiver(post.getMember().getEmail())
+			.nickname(post.getMember().getNickname())
 			.type(NEW_HEART)
-			.content(String.format(NEW_HEART.getValue(), member.getNickname()))
-			.createdAt(Timestamp.valueOf(heart.getCreatedAt()))
+			.targetId(postId)
 			.build();
 
 		notificationProducer.produce(message);
