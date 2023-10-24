@@ -60,20 +60,17 @@ public class PostServiceImpl implements PostService {
 			? new ArrayList<>()
 			: awsS3Service.uploadFiles(files, DIR);
 
-		List<PostImageResponse> postImgResponse = new ArrayList<>();
-
 		if (!imageUrls.isEmpty()) {
-			for (String url : imageUrls) {
+			imageUrls.forEach(url -> {
 				PostImage image = PostImage.builder()
 					.postImageUrl(url)
 					.post(savedPost)
 					.build();
 
 				postImageRepository.save(image);
-				postImgResponse.add(PostImageResponse.fromEntity(image));
-			}
+			});
 		}
-		return EditPostResponse.fromEntity(post, postImgResponse);
+		return EditPostResponse.fromEntity(post);
 	}
 
 	@Override
@@ -91,16 +88,12 @@ public class PostServiceImpl implements PostService {
 		postHashtagRepository.deleteAllPostHashtagByPostId(post.getId());
 		List<Hashtag> hashtags = hashtagService.createHashTags(request.getTagNames());
 
-		if(Objects.isNull(hashtags)) {
+		if (Objects.isNull(hashtags)) {
 			post.update(request.getTitle(), request.getContent());
 		} else {
 			post.update(request.getTitle(), request.getContent(), hashtags);
 		}
-
-		List<PostImageResponse> postImageResponse
-			= postImageRepository.findAllPostImageByPostId(post.getId());
-
-		return EditPostResponse.fromEntity(post, postImageResponse);
+		return EditPostResponse.fromEntity(post);
 	}
 
 	@Override
