@@ -25,4 +25,9 @@ public class PostHashtag extends BaseCreatedTimeEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "hashtag_id", updatable = false)
 	private Hashtag hashtag;
+
+	public PostHashtag(Post post, Hashtag hashtag) {
+		this.post = post;
+		this.hashtag = hashtag;
+	}
 }

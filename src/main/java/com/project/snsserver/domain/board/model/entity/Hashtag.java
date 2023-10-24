@@ -1,15 +1,19 @@
 package com.project.snsserver.domain.board.model.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import com.project.snsserver.global.entity.BaseCreatedTimeEntity;
 
-import lombok.*;
-
-import javax.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Hashtag extends BaseCreatedTimeEntity {
 
@@ -20,4 +24,8 @@ public class Hashtag extends BaseCreatedTimeEntity {
 
 	@Column(unique = true)
 	private String name;
+
+	public Hashtag(String name) {
+		this.name = name;
+	}
 }

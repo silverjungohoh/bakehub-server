@@ -7,6 +7,7 @@ import com.project.snsserver.domain.board.model.dto.response.PostDetailResponse;
 import com.project.snsserver.domain.board.model.dto.response.PostHashtagResponse;
 import com.project.snsserver.domain.board.model.dto.response.PostImageResponse;
 import com.project.snsserver.domain.board.model.dto.response.PostResponse;
+import com.project.snsserver.domain.board.model.entity.Hashtag;
 import com.project.snsserver.domain.board.model.entity.Post;
 import com.project.snsserver.domain.board.model.entity.PostImage;
 import com.project.snsserver.domain.board.repository.jpa.*;
@@ -36,8 +37,8 @@ public class PostServiceImpl implements PostService {
 	private final PostImageRepository postImageRepository;
 	private final CommentRepository commentRepository;
 	private final PostHeartRepository postHeartRepository;
-	private final PostHashtagService postHashtagService;
 	private final PostHashtagRepository postHashtagRepository;
+	private final HashtagService hashtagService;
 
 	@Override
 	@Transactional
@@ -47,13 +48,13 @@ public class PostServiceImpl implements PostService {
 			throw new BoardException(IMAGE_COUNT_EXCEEDED);
 		}
 
-		Post post = Post.builder()
-			.title(request.getTitle())
-			.content(request.getContent())
-			.member(member)
-			.build();
+		List<Hashtag> hashtags = hashtagService.createHashTags(request.getTagNames());
 
-		postRepository.save(post);
+		Post post = Objects.isNull(hashtags)
+			? new Post(request.getTitle(), request.getContent(), member)
+			: new Post(request.getTitle(), request.getContent(), member, hashtags);
+
+		Post savedPost = postRepository.save(post);
 
 		List<String> imageUrls = Objects.isNull(files)
 			? new ArrayList<>()
@@ -65,15 +66,12 @@ public class PostServiceImpl implements PostService {
 			for (String url : imageUrls) {
 				PostImage image = PostImage.builder()
 					.postImageUrl(url)
-					.post(post)
+					.post(savedPost)
 					.build();
 
 				postImageRepository.save(image);
 				postImgResponse.add(PostImageResponse.fromEntity(image));
 			}
-		}
-		if (!Objects.isNull(request.getTagNames())) {
-			postHashtagService.createPostHashtag(post, request.getTagNames());
 		}
 		return EditPostResponse.fromEntity(post, postImgResponse);
 	}
@@ -89,14 +87,15 @@ public class PostServiceImpl implements PostService {
 			throw new BoardException(FAIL_TO_UPDATE_POST);
 		}
 
-		// 해당 게시물의 모든 해시태그 삭제 후 입력 받은 해시태그 생성
+		// 해당 게시물의 모든 해시태그 삭제 후 저장
 		postHashtagRepository.deleteAllPostHashtagByPostId(post.getId());
+		List<Hashtag> hashtags = hashtagService.createHashTags(request.getTagNames());
 
-		if (!Objects.isNull(request.getTagNames())) {
-			postHashtagService.createPostHashtag(post, request.getTagNames());
+		if(Objects.isNull(hashtags)) {
+			post.update(request.getTitle(), request.getContent());
+		} else {
+			post.update(request.getTitle(), request.getContent(), hashtags);
 		}
-
-		post.update(request.getTitle(), request.getContent());
 
 		List<PostImageResponse> postImageResponse
 			= postImageRepository.findAllPostImageByPostId(post.getId());

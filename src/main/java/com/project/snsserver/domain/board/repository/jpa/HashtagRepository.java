@@ -1,12 +1,12 @@
 package com.project.snsserver.domain.board.repository.jpa;
 
-import com.project.snsserver.domain.board.model.entity.Hashtag;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.project.snsserver.domain.board.model.entity.Hashtag;
 
 public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
 
-	Optional<Hashtag> findByName(String name);
+	List<Hashtag> findAllByNameIn(List<String> tagNames);
 }

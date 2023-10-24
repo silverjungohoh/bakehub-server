@@ -1,14 +1,14 @@
 package com.project.snsserver.domain.board.model.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -23,5 +23,5 @@ public class EditPostRequest {
 	private String content;
 
 	@Size(max = 5, message = "해시태그는 최대 5개까지 입력 가능합니다.")
-	private Set<String> tagNames;
+	private List<String> tagNames;
 }

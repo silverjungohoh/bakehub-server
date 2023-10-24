@@ -1,19 +1,29 @@
 package com.project.snsserver.domain.board.model.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.global.entity.BaseTimeEntity;
 
-import lombok.*;
-
-import javax.persistence.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
 
@@ -32,24 +42,36 @@ public class Post extends BaseTimeEntity {
 	@JoinColumn(name = "member_id", updatable = false)
 	private Member member;
 
-	@Builder.Default
-	@OneToMany(mappedBy = "post")
-	private List<PostImage> postImages = new ArrayList<>();
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	private List<PostHashtag> postHashtags = new ArrayList<>();
 
-	@Builder.Default
-	@OneToMany(mappedBy = "post")
-	private List<Comment> comments = new ArrayList<>();
+	public Post(String title, String content, Member member) {
+		this.title = title;
+		this.content = content;
+		this.member = member;
+	}
 
-	@Builder.Default
-	@OneToMany(mappedBy = "post")
-	private List<PostHeart> hearts = new ArrayList<>();
-
-	@Builder.Default
-	@OneToMany(mappedBy = "post")
-	private List<PostHashtag> hashtags = new ArrayList<>();
+	public Post(String title, String content, Member member, List<Hashtag> hashtags) {
+		this.title = title;
+		this.content = content;
+		this.member = member;
+		this.postHashtags = mapToPostHashtag(this, hashtags);
+	}
 
 	public void update(String title, String content) {
 		this.title = title;
 		this.content = content;
+	}
+
+	public void update(String title, String content, List<Hashtag> hashtags) {
+		this.title = title;
+		this.content = content;
+		this.postHashtags = mapToPostHashtag(this, hashtags);
+	}
+
+	private static List<PostHashtag> mapToPostHashtag(Post post, List<Hashtag> hashtags) {
+		return hashtags.stream()
+			.map(hashtag -> new PostHashtag(post, hashtag))
+			.collect(Collectors.toList());
 	}
 }

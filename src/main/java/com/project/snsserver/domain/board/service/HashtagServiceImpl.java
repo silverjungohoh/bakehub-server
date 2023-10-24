@@ -1,14 +1,16 @@
 package com.project.snsserver.domain.board.service;
 
-import com.project.snsserver.domain.board.model.entity.Hashtag;
-import com.project.snsserver.domain.board.repository.jpa.HashtagRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import com.project.snsserver.domain.board.model.entity.Hashtag;
+import com.project.snsserver.domain.board.repository.jpa.HashtagRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -18,16 +20,30 @@ public class HashtagServiceImpl implements HashtagService {
 
 	@Override
 	@Transactional
-	public Hashtag createHashtag(String tagName) {
+	public List<Hashtag> createHashTags(List<String> tagNames) {
 
-		Optional<Hashtag> optional
-			= hashtagRepository.findByName(tagName);
-
-		if (optional.isEmpty()) {
-			return hashtagRepository.save(Hashtag.builder().name(tagName).build());
+		if(Objects.isNull(tagNames) || tagNames.isEmpty()) {
+			return null;
 		}
 
-		return optional.get();
+		// TODO : 기존에 저장된 tag name 목록 가져오기
+		List<Hashtag> hashtags = hashtagRepository.findAllByNameIn(tagNames);
+		List<String> hashtagNames = hashtags.stream()
+			.map(Hashtag :: getName)
+			.collect(Collectors.toList());
+
+		// TODO : 저장되어 있지 않은 tag name 저장하기
+		for(String name : tagNames) {
+			if(!hashtagNames.contains(name)) {
+				Hashtag newHashtag = saveNewHashtag(name);
+				hashtags.add(newHashtag);
+			}
+		}
+		return hashtags;
+	}
+
+	private Hashtag saveNewHashtag(String tagName) {
+		return hashtagRepository.save(new Hashtag(tagName));
 	}
 }
 
