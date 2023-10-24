@@ -143,11 +143,10 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	public Map<String, String> deletePostImage(Long postId, Long postImageId) {
 
-		if (!postRepository.existsById(postId)) {
-			throw new BoardException(POST_NOT_FOUND);
-		}
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-		PostImage postImage = postImageRepository.findById(postImageId)
+		PostImage postImage = postImageRepository.findByIdAndPost(postImageId, post)
 			.orElseThrow(() -> new BoardException(POST_IMAGE_NOT_FOUND));
 
 		postImageRepository.delete(postImage);

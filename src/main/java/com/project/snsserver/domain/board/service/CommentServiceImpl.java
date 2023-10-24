@@ -65,11 +65,10 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	public Map<String, String> deleteComment(Long postId, Long commentId, Member member) {
 
-		if (!postRepository.existsById(postId)) {
-			throw new BoardException(POST_NOT_FOUND);
-		}
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-		Comment comment = commentRepository.findById(commentId)
+		Comment comment = commentRepository.findByIdAndPost(commentId, post)
 			.orElseThrow(() -> new BoardException(COMMENT_NOT_FOUND));
 
 		if (!Objects.equals(member.getEmail(), comment.getMember().getEmail())) {
@@ -84,11 +83,10 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	public EditCommentResponse updateComment(Long postId, Long commentId, EditCommentRequest request, Member member) {
 
-		if (!postRepository.existsById(postId)) {
-			throw new BoardException(POST_NOT_FOUND);
-		}
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BoardException(POST_NOT_FOUND));
 
-		Comment comment = commentRepository.findById(commentId)
+		Comment comment = commentRepository.findByIdAndPost(commentId, post)
 			.orElseThrow(() -> new BoardException(COMMENT_NOT_FOUND));
 
 		if (!Objects.equals(member.getEmail(), comment.getMember().getEmail())) {

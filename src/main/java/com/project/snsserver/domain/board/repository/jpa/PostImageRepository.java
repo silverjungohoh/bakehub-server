@@ -7,8 +7,11 @@ import com.project.snsserver.domain.board.repository.jpa.custom.CustomPostImageR
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostImageRepository extends JpaRepository<PostImage, Long>, CustomPostImageRepository {
 
 	List<PostImage> findAllByPost(Post post);
+
+	Optional<PostImage> findByIdAndPost(Long postImageId, Post post);
 }
