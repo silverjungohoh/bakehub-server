@@ -1,7 +1,23 @@
 package com.project.snsserver.domain.member.service;
 
+import static com.project.snsserver.global.error.type.MemberErrorCode.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.snsserver.domain.awss3.service.AwsS3Service;
-import com.project.snsserver.domain.board.repository.jpa.*;
+import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
+import com.project.snsserver.domain.board.repository.jpa.PostHashtagRepository;
+import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
+import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
+import com.project.snsserver.domain.board.repository.jpa.PostRepository;
 import com.project.snsserver.domain.mail.model.MailMessage;
 import com.project.snsserver.domain.mail.service.MailService;
 import com.project.snsserver.domain.member.model.dto.request.LoginRequest;
@@ -27,28 +43,11 @@ import com.project.snsserver.domain.member.repository.redis.RefreshTokenReposito
 import com.project.snsserver.domain.member.type.MemberRole;
 import com.project.snsserver.domain.member.type.MemberStatus;
 import com.project.snsserver.domain.notification.repository.jpa.NotificationRepository;
-import com.project.snsserver.domain.security.CustomUserDetails;
 import com.project.snsserver.domain.security.jwt.JwtTokenProvider;
 import com.project.snsserver.global.error.exception.MemberException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import static com.project.snsserver.global.error.type.MemberErrorCode.*;
 
 @Slf4j
 @Service
@@ -63,7 +62,6 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberAuthCodeRepository memberAuthCodeRepository;
 	private final AwsS3Service awsS3Service;
 	private final PasswordEncoder passwordEncoder;
-	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final LogoutAccessTokenRepository logoutAccessTokenRepository;
@@ -159,21 +157,15 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public LoginResponse login(LoginRequest request) {
 
-		// UsernamePasswordAuthenticationToken 객체 생성
-		UsernamePasswordAuthenticationToken authenticationToken
-			= new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+		Member member = memberRepository.findByEmail(request.getEmail())
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-		// authenticate 메서드가 실행이 될 때 loadUserByUsername 메서드가 실행
-		// 성공 시 사용자 정보가 담긴 Authentication 객체를 생성하여 반환
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+			throw new MemberException(INCORRECT_PASSWORD);
+		}
 
-		// SecurityContext에 Authentication 객체를 저장
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-
-		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
-		String accessToken = jwtTokenProvider.generateAccessToken(userDetails.getUsername(),
-			userDetails.getRole().name());
-		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getUsername());
+		String accessToken = jwtTokenProvider.generateAccessToken(member.getEmail(), member.getRole().name());
+		String refreshToken = jwtTokenProvider.generateRefreshToken(member.getEmail());
 
 		return LoginResponse.builder()
 			.accessToken(accessToken)
