@@ -2,8 +2,6 @@ package com.project.snsserver.global.error.handler;
 
 import static com.project.snsserver.global.error.type.CommonErrorCode.*;
 
-import java.util.Objects;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +12,7 @@ import com.project.snsserver.global.error.exception.BoardException;
 import com.project.snsserver.global.error.exception.CommonException;
 import com.project.snsserver.global.error.exception.MemberException;
 import com.project.snsserver.global.error.model.ErrorResponse;
+import com.project.snsserver.global.error.model.ValidationErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,15 +45,12 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+	public ResponseEntity<ValidationErrorResponse> handleMethodArgumentNotValidException(
+		MethodArgumentNotValidException e) {
 
-		ErrorResponse response = ErrorResponse.builder()
-			.status(INVALID_ARGUMENT.getStatus().value())
-			.code(INVALID_ARGUMENT.getCode())
-			.message(Objects.requireNonNull(e.getFieldError()).getDefaultMessage())
-			.build();
+		ValidationErrorResponse response = ValidationErrorResponse.from(e.getFieldErrors());
 
-		return ResponseEntity.status(INVALID_ARGUMENT.getStatus()).body(response);
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)

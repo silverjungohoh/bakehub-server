@@ -78,7 +78,7 @@ public interface MemberService {
 	/**
 	 * 회원 탈퇴
 	 */
-	Map<String, String> withdraw(WithdrawRequest request, Member member);
+	Map<String, String> withdraw(WithdrawRequest request, String email);
 
 	/**
 	 * 회원 정보 조회

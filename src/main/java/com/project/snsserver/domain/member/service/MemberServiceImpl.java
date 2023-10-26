@@ -1,7 +1,18 @@
 package com.project.snsserver.domain.member.service;
 
+import static com.project.snsserver.global.error.type.MemberErrorCode.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.snsserver.domain.awss3.service.AwsS3Service;
-import com.project.snsserver.domain.board.repository.jpa.*;
 import com.project.snsserver.domain.mail.model.MailMessage;
 import com.project.snsserver.domain.mail.service.MailService;
 import com.project.snsserver.domain.member.model.dto.request.LoginRequest;
@@ -26,29 +37,11 @@ import com.project.snsserver.domain.member.repository.redis.MemberAuthCodeReposi
 import com.project.snsserver.domain.member.repository.redis.RefreshTokenRepository;
 import com.project.snsserver.domain.member.type.MemberRole;
 import com.project.snsserver.domain.member.type.MemberStatus;
-import com.project.snsserver.domain.notification.repository.jpa.NotificationRepository;
-import com.project.snsserver.domain.security.CustomUserDetails;
 import com.project.snsserver.domain.security.jwt.JwtTokenProvider;
 import com.project.snsserver.global.error.exception.MemberException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import static com.project.snsserver.global.error.type.MemberErrorCode.*;
 
 @Slf4j
 @Service
@@ -63,16 +56,9 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberAuthCodeRepository memberAuthCodeRepository;
 	private final AwsS3Service awsS3Service;
 	private final PasswordEncoder passwordEncoder;
-	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final LogoutAccessTokenRepository logoutAccessTokenRepository;
-	private final CommentRepository commentRepository;
-	private final PostRepository postRepository;
-	private final PostHeartRepository postHeartRepository;
-	private final NotificationRepository notificationRepository;
-	private final PostImageRepository postImageRepository;
-	private final PostHashtagRepository postHashtagRepository;
 
 	@Override
 	public Map<String, String> checkEmailDuplicate(String email) {
@@ -159,21 +145,15 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional
 	public LoginResponse login(LoginRequest request) {
 
-		// UsernamePasswordAuthenticationToken 객체 생성
-		UsernamePasswordAuthenticationToken authenticationToken
-			= new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+		Member member = memberRepository.findByEmail(request.getEmail())
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-		// authenticate 메서드가 실행이 될 때 loadUserByUsername 메서드가 실행
-		// 성공 시 사용자 정보가 담긴 Authentication 객체를 생성하여 반환
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+			throw new MemberException(INCORRECT_PASSWORD);
+		}
 
-		// SecurityContext에 Authentication 객체를 저장
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-
-		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
-		String accessToken = jwtTokenProvider.generateAccessToken(userDetails.getUsername(),
-			userDetails.getRole().name());
-		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails.getUsername());
+		String accessToken = jwtTokenProvider.generateAccessToken(member.getEmail(), member.getRole().name());
+		String refreshToken = jwtTokenProvider.generateRefreshToken(member.getEmail());
 
 		return LoginResponse.builder()
 			.accessToken(accessToken)
@@ -272,32 +252,16 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	@Transactional
-	public Map<String, String> withdraw(WithdrawRequest request, Member member) {
+	public Map<String, String> withdraw(WithdrawRequest request, String email) {
+
+		Member member = memberRepository.findByEmail(email)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
 		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
 			throw new MemberException(FAIL_TO_WITHDRAWAL);
 		}
-
-		// 회원이 작성한 댓글, 좋아요 삭제
-		commentRepository.deleteAlCommentByMemberId(member.getId());
-		postHeartRepository.deleteAllPostHeartByMemberId(member.getId());
-
-		// 회원의 게시물에 달린 댓글, 좋아요, 해시태그 삭제
-		commentRepository.deleteAllCommentInPostIdsByMemberId(member.getId());
-		postHeartRepository.deleteAllPostHeartInPostIdsByMemberId(member.getId());
-		postHashtagRepository.deletePostHashtagAllInPostIdsByMemberId(member.getId());
-
-		// 회원의 게시물 이미지 삭제
-		postImageRepository.deleteAllPostImageInPostIdsByMemberId(member.getId());
-
-		// 회원의 알림 전체 삭제
-		notificationRepository.deleteAllNotificationByMemberId(member.getId());
-
-		// 회원의 게시물 전체 삭제
-		postRepository.deleteAllPostByMemberId(member.getId());
-
 		awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
-		memberRepository.delete(member);
+		member.withdraw();
 
 		return getMessage("회원 탈퇴가 완료되었습니다.");
 	}
