@@ -1,28 +1,29 @@
 package com.project.snsserver.domain.board.repository.jpa.custom;
 
-import com.project.snsserver.domain.board.model.dto.response.PostDetailResponse;
-import com.project.snsserver.domain.board.model.dto.response.PostResponse;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import static com.project.snsserver.domain.board.model.entity.QComment.*;
+import static com.project.snsserver.domain.board.model.entity.QHashtag.*;
+import static com.project.snsserver.domain.board.model.entity.QPost.*;
+import static com.project.snsserver.domain.board.model.entity.QPostHashtag.*;
+import static com.project.snsserver.domain.board.model.entity.QPostHeart.*;
+import static com.project.snsserver.domain.member.model.entity.QMember.*;
+import static com.querydsl.core.types.ExpressionUtils.*;
+import static com.querydsl.core.types.Projections.*;
+import static com.querydsl.jpa.JPAExpressions.*;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
-import java.util.List;
+import com.project.snsserver.domain.board.model.dto.response.PostDetailResponse;
+import com.project.snsserver.domain.board.model.dto.response.PostResponse;
+import com.querydsl.core.types.QBean;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import static com.project.snsserver.domain.board.model.entity.QComment.comment;
-import static com.project.snsserver.domain.board.model.entity.QHashtag.hashtag;
-import static com.project.snsserver.domain.board.model.entity.QPost.post;
-import static com.project.snsserver.domain.board.model.entity.QPostHashtag.postHashtag;
-import static com.project.snsserver.domain.board.model.entity.QPostHeart.postHeart;
-import static com.project.snsserver.domain.member.model.entity.QMember.member;
-import static com.querydsl.core.types.ExpressionUtils.as;
-import static com.querydsl.core.types.Projections.*;
-import static com.querydsl.core.types.dsl.Expressions.asBoolean;
-import static com.querydsl.jpa.JPAExpressions.select;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CustomPostRepositoryImpl implements CustomPostRepository {
@@ -33,54 +34,29 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	public Slice<PostResponse> findAllPost(Long lastPostId, Pageable pageable) {
 
 		List<PostResponse> posts = queryFactory
-			.select(
-				fields(PostResponse.class,
-					post.id.as("postId"),
-					post.title.as("title"),
-					post.content.as("content"),
-					member.nickname.as("nickname"),
-					post.createdAt.as("createdAt"),
-					as(select(comment.id.count()).from(comment)
-							.where(comment.post.id.eq(post.id)),
-						"commentCnt"),
-					as(select(postHeart.id.count()).from(postHeart)
-							.where(postHeart.post.id.eq(post.id)),
-						"heartCnt"
-					)
-				)
-			)
+			.select(getPostResponseFields())
 			.from(post)
 			.leftJoin(post.member, member)
 			.where(lastPostId(lastPostId))
 			.limit(pageable.getPageSize() + 1)
 			.orderBy(post.createdAt.desc())
 			.fetch();
+
 		return checkLastPage(pageable, posts);
 	}
 
 	@Override
 	public PostDetailResponse findPostByPostId(Long postId, Long memberId) {
 		return queryFactory
-			.select(
-				fields(PostDetailResponse.class,
+			.select(fields(PostDetailResponse.class,
 					post.id.as("postId"),
 					post.title.as("title"),
 					post.content.as("content"),
 					member.nickname.as("nickname"),
 					post.createdAt.as("createdAt"),
-					as(asBoolean(select(postHeart.id.count())
-						.from(postHeart)
-						.where(postHeart.post.id.eq(postId),
-							postHeart.member.id.eq(memberId)
-						).eq(1L)), "hasHeart"),
-					as(select(comment.id.count())
-							.from(comment)
-							.where(comment.post.id.eq(postId)),
-						"commentCnt"),
-					as(select(postHeart.id.count())
-							.from(postHeart)
-							.where(postHeart.post.id.eq(postId)),
-						"heartCnt")
+					as(checkHasHeart(postId, memberId), "hasHeart"),
+					as(getCommentCount(), "commentCnt"),
+					as(getHeartCount(), "heartCnt")
 				)
 			)
 			.from(post)
@@ -92,24 +68,11 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	@Override
 	public Slice<PostResponse> findAllPostByHashtag(Long lastPostId, String name, Pageable pageable) {
 
-		List<PostResponse> postsByHashtag = queryFactory.select(
-				fields(PostResponse.class,
-					post.id.as("postId"),
-					post.title.as("title"),
-					post.content.as("content"),
-					member.nickname.as("nickname"),
-					post.createdAt.as("createdAt"),
-					as(select(comment.id.count()).from(comment)
-							.where(comment.post.id.eq(post.id)),
-						"commentCnt"),
-					as(select(postHeart.id.count()).from(postHeart)
-							.where(postHeart.post.id.eq(post.id)),
-						"heartCnt")
-				)
-			)
-			.from(postHashtag)
-			.leftJoin(postHashtag.post, post)
-			.leftJoin(postHashtag.post.member, member)
+		List<PostResponse> postsByHashtag = queryFactory
+			.select(getPostResponseFields())
+			.from(post)
+			.innerJoin(post.member, member)
+			.leftJoin(post.postHashtags, postHashtag)
 			.leftJoin(postHashtag.hashtag, hashtag)
 			.where(lastPostId(lastPostId), hashtag.name.eq(name))
 			.limit(pageable.getPageSize() + 1)
@@ -136,5 +99,33 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 		}
 
 		return new SliceImpl<>(posts, pageable, hasNext);
+	}
+
+	private QBean<PostResponse> getPostResponseFields() {
+		return fields(PostResponse.class,
+			post.id.as("postId"),
+			post.title.as("title"),
+			post.content.as("content"),
+			member.nickname.as("nickname"),
+			post.createdAt.as("createdAt"),
+			as(getCommentCount(), "commentCnt"),
+			as(getHeartCount(), "heartCnt")
+		);
+	}
+
+	private JPQLQuery<Long> getCommentCount() {
+		return select(comment.id.count()).from(comment)
+			.where(comment.post.id.eq(post.id));
+	}
+
+	private JPQLQuery<Long> getHeartCount() {
+		return select(postHeart.id.count()).from(postHeart)
+			.where(postHeart.post.id.eq(post.id));
+	}
+
+	private BooleanExpression checkHasHeart(Long postId, Long memberId) {
+		return selectOne().from(postHeart)
+			.where(postHeart.post.id.eq(postId), postHeart.member.id.eq(memberId))
+			.exists();
 	}
 }
