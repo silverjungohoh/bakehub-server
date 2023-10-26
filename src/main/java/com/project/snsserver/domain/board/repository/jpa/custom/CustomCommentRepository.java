@@ -10,8 +10,4 @@ public interface CustomCommentRepository {
 	Slice<CommentResponse> findAllCommentByPostId(Long postId, Long lastCommentId, String email, Pageable pageable);
 
 	Long deleteAllCommentByPostId(Long postId);
-
-	Long deleteAlCommentByMemberId(Long memberId);
-
-	Long deleteAllCommentInPostIdsByMemberId(Long memberId);
 }

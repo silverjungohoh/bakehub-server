@@ -13,11 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.snsserver.domain.awss3.service.AwsS3Service;
-import com.project.snsserver.domain.board.repository.jpa.CommentRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostHashtagRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostImageRepository;
-import com.project.snsserver.domain.board.repository.jpa.PostRepository;
 import com.project.snsserver.domain.mail.model.MailMessage;
 import com.project.snsserver.domain.mail.service.MailService;
 import com.project.snsserver.domain.member.model.dto.request.LoginRequest;
@@ -42,7 +37,6 @@ import com.project.snsserver.domain.member.repository.redis.MemberAuthCodeReposi
 import com.project.snsserver.domain.member.repository.redis.RefreshTokenRepository;
 import com.project.snsserver.domain.member.type.MemberRole;
 import com.project.snsserver.domain.member.type.MemberStatus;
-import com.project.snsserver.domain.notification.repository.jpa.NotificationRepository;
 import com.project.snsserver.domain.security.jwt.JwtTokenProvider;
 import com.project.snsserver.global.error.exception.MemberException;
 
@@ -65,12 +59,6 @@ public class MemberServiceImpl implements MemberService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final LogoutAccessTokenRepository logoutAccessTokenRepository;
-	private final CommentRepository commentRepository;
-	private final PostRepository postRepository;
-	private final PostHeartRepository postHeartRepository;
-	private final NotificationRepository notificationRepository;
-	private final PostImageRepository postImageRepository;
-	private final PostHashtagRepository postHashtagRepository;
 
 	@Override
 	public Map<String, String> checkEmailDuplicate(String email) {
@@ -160,7 +148,7 @@ public class MemberServiceImpl implements MemberService {
 		Member member = memberRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-		if(!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
 			throw new MemberException(INCORRECT_PASSWORD);
 		}
 
@@ -264,32 +252,16 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	@Transactional
-	public Map<String, String> withdraw(WithdrawRequest request, Member member) {
+	public Map<String, String> withdraw(WithdrawRequest request, String email) {
+
+		Member member = memberRepository.findByEmail(email)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
 		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
 			throw new MemberException(FAIL_TO_WITHDRAWAL);
 		}
-
-		// 회원이 작성한 댓글, 좋아요 삭제
-		commentRepository.deleteAlCommentByMemberId(member.getId());
-		postHeartRepository.deleteAllPostHeartByMemberId(member.getId());
-
-		// 회원의 게시물에 달린 댓글, 좋아요, 해시태그 삭제
-		commentRepository.deleteAllCommentInPostIdsByMemberId(member.getId());
-		postHeartRepository.deleteAllPostHeartInPostIdsByMemberId(member.getId());
-		postHashtagRepository.deletePostHashtagAllInPostIdsByMemberId(member.getId());
-
-		// 회원의 게시물 이미지 삭제
-		postImageRepository.deleteAllPostImageInPostIdsByMemberId(member.getId());
-
-		// 회원의 알림 전체 삭제
-		notificationRepository.deleteAllNotificationByMemberId(member.getId());
-
-		// 회원의 게시물 전체 삭제
-		postRepository.deleteAllPostByMemberId(member.getId());
-
 		awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
-		memberRepository.delete(member);
+		member.withdraw();
 
 		return getMessage("회원 탈퇴가 완료되었습니다.");
 	}

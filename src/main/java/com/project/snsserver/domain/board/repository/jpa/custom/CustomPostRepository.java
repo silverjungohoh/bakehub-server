@@ -13,6 +13,4 @@ public interface CustomPostRepository {
 	PostDetailResponse findPostByPostId(Long postId, Long memberId);
 
 	Slice<PostResponse> findAllPostByHashtag(Long lastPostId, String name, Pageable pageable);
-
-	Long deleteAllPostByMemberId(Long memberId);
 }

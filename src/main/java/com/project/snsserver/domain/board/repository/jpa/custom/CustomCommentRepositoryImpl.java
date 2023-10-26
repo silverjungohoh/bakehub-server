@@ -1,23 +1,22 @@
 package com.project.snsserver.domain.board.repository.jpa.custom;
 
-import com.project.snsserver.domain.board.model.dto.response.CommentResponse;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import static com.project.snsserver.domain.board.model.entity.QComment.*;
+import static com.project.snsserver.domain.board.model.entity.QPost.*;
+import static com.project.snsserver.domain.member.model.entity.QMember.*;
+import static com.querydsl.core.types.Projections.*;
+import static com.querydsl.core.types.dsl.Expressions.*;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
-import java.util.List;
+import com.project.snsserver.domain.board.model.dto.response.CommentResponse;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import static com.project.snsserver.domain.board.model.entity.QComment.comment;
-import static com.project.snsserver.domain.board.model.entity.QPost.post;
-import static com.project.snsserver.domain.member.model.entity.QMember.member;
-import static com.querydsl.core.types.Projections.*;
-import static com.querydsl.core.types.dsl.Expressions.asBoolean;
-import static com.querydsl.jpa.JPAExpressions.select;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CustomCommentRepositoryImpl implements CustomCommentRepository {
@@ -58,22 +57,6 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	public Long deleteAllCommentByPostId(Long postId) {
 		return queryFactory.delete(comment)
 			.where(comment.post.id.eq(postId))
-			.execute();
-	}
-
-	@Override
-	public Long deleteAlCommentByMemberId(Long memberId) {
-		return queryFactory.delete(comment)
-			.where(comment.member.id.eq(memberId))
-			.execute();
-	}
-
-	public Long deleteAllCommentInPostIdsByMemberId(Long memberId) {
-		return queryFactory.delete(comment)
-			.where(comment.post.id.in(
-					select(post.id).from(post).where(post.member.id.eq(memberId))
-				)
-			)
 			.execute();
 	}
 
