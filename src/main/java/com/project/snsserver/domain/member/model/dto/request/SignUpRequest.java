@@ -19,7 +19,6 @@ public class SignUpRequest {
 	@Email(message = "이메일 형식이 잘못되었습니다.")
 	private String email;
 
-	@NotBlank(message = "비밀번호를 입력해주세요.")
 	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$",
 		message = "비밀번호는 숫자를 포함한 영문자 최소 8자, 최대 20자까지 가능합니다.")
 	private String password;
@@ -27,7 +26,6 @@ public class SignUpRequest {
 	@NotBlank(message = "비밀번호 확인을 입력해주세요.")
 	private String passwordCheck;
 
-	@NotBlank(message = "닉네임을 입력해주세요.")
 	@Size(min = 2, max = 10, message = "닉네임은 최소 2자, 최대 10자까지 가능합니다")
 	private String nickname;
 
