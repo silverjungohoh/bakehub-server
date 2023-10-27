@@ -8,6 +8,7 @@ import com.project.snsserver.domain.member.model.dto.request.UpdateNicknameReque
 import com.project.snsserver.domain.member.model.dto.request.UpdatePasswordRequest;
 import com.project.snsserver.domain.member.model.dto.request.WithdrawRequest;
 import com.project.snsserver.domain.member.model.dto.response.MemberDetailResponse;
+import com.project.snsserver.domain.member.model.dto.response.MyDetailResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
 
 public interface MemberInfoService {
@@ -35,10 +36,10 @@ public interface MemberInfoService {
 	/**
 	 * 나의 회원 정보 상세 조회
 	 */
-	MemberDetailResponse getMyMemberDetail(Member member);
+	MyDetailResponse getMyDetail(Member member);
 
 	/**
 	 * 다른 회원 정보 상세 조회
 	 */
-	MemberDetailResponse getMemberDetail(Long memberId);
+	MemberDetailResponse getMemberDetail(Long myMemberId, Long memberId);
 }

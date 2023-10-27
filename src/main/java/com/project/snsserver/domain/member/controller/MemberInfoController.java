@@ -20,6 +20,7 @@ import com.project.snsserver.domain.member.model.dto.request.UpdateNicknameReque
 import com.project.snsserver.domain.member.model.dto.request.UpdatePasswordRequest;
 import com.project.snsserver.domain.member.model.dto.request.WithdrawRequest;
 import com.project.snsserver.domain.member.model.dto.response.MemberDetailResponse;
+import com.project.snsserver.domain.member.model.dto.response.MyDetailResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.service.MemberInfoService;
 import com.project.snsserver.domain.security.CustomUserDetails;
@@ -89,17 +90,18 @@ public class MemberInfoController {
 	 */
 	@Operation(summary = "나의 회원 상세 정보 조회")
 	@GetMapping("/info")
-	public ResponseEntity<MemberDetailResponse> getMyMemberDetail(@AuthMember Member member) {
+	public ResponseEntity<MyDetailResponse> getMyMemberDetail(@AuthMember Member member) {
 
-		MemberDetailResponse response = memberInfoService.getMyMemberDetail(member);
+		MyDetailResponse response = memberInfoService.getMyDetail(member);
 		return ResponseEntity.ok(response);
 	}
 
 	@Operation(summary = "다른 회원 상세 정보 조회")
 	@GetMapping("/{memberId}/info")
-	public ResponseEntity<MemberDetailResponse> getMemberDetail(@PathVariable Long memberId) {
+	public ResponseEntity<MemberDetailResponse> getMemberDetail(@AuthMember Member member,
+		@PathVariable Long memberId) {
 
-		MemberDetailResponse response = memberInfoService.getMemberDetail(memberId);
+		MemberDetailResponse response = memberInfoService.getMemberDetail(member.getId(), memberId);
 		return ResponseEntity.ok(response);
 	}
 

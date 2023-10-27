@@ -16,6 +16,7 @@ import com.project.snsserver.domain.member.model.dto.request.UpdateNicknameReque
 import com.project.snsserver.domain.member.model.dto.request.UpdatePasswordRequest;
 import com.project.snsserver.domain.member.model.dto.request.WithdrawRequest;
 import com.project.snsserver.domain.member.model.dto.response.MemberDetailResponse;
+import com.project.snsserver.domain.member.model.dto.response.MyDetailResponse;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.member.repository.jpa.MemberRepository;
 import com.project.snsserver.global.error.exception.MemberException;
@@ -94,18 +95,18 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public MemberDetailResponse getMemberDetail(Long memberId) {
+	public MemberDetailResponse getMemberDetail(Long myMemberId, Long memberId) {
 
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-		return memberRepository.findMemberDetailByMemberId(member.getId());
+		return memberRepository.findMemberDetailByMemberId(myMemberId, member.getId());
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public MemberDetailResponse getMyMemberDetail(Member member) {
-		return memberRepository.findMemberDetailByMemberId(member.getId());
+	public MyDetailResponse getMyDetail(Member member) {
+		return memberRepository.findMyDetail(member.getId());
 	}
 
 	private Member getMemberByEmail(String email) {
