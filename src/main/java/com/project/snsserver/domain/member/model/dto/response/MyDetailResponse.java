@@ -2,7 +2,6 @@ package com.project.snsserver.domain.member.model.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.snsserver.domain.member.type.Gender;
 
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberDetailResponse {
+public class MyDetailResponse {
 
 	private Long memberId;
 
@@ -35,7 +34,4 @@ public class MemberDetailResponse {
 	private Long followingCnt;
 
 	private Long followerCnt;
-
-	@JsonProperty("isMyFollowing")
-	private boolean myFollowing; // 내가 팔로잉하고 있는지 여부
 }

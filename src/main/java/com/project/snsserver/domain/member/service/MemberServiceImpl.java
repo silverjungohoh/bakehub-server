@@ -18,12 +18,8 @@ import com.project.snsserver.domain.mail.service.MailService;
 import com.project.snsserver.domain.member.model.dto.request.LoginRequest;
 import com.project.snsserver.domain.member.model.dto.request.LogoutRequest;
 import com.project.snsserver.domain.member.model.dto.request.SignUpRequest;
-import com.project.snsserver.domain.member.model.dto.request.UpdateNicknameRequest;
-import com.project.snsserver.domain.member.model.dto.request.UpdatePasswordRequest;
 import com.project.snsserver.domain.member.model.dto.request.VerifyAuthCodeRequest;
-import com.project.snsserver.domain.member.model.dto.request.WithdrawRequest;
 import com.project.snsserver.domain.member.model.dto.response.LoginResponse;
-import com.project.snsserver.domain.member.model.dto.response.MemberDetailResponse;
 import com.project.snsserver.domain.member.model.dto.response.ProfileResponse;
 import com.project.snsserver.domain.member.model.dto.response.ReissueTokenResponse;
 import com.project.snsserver.domain.member.model.dto.response.SignUpResponse;
@@ -203,76 +199,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	@Transactional
-	public Map<String, String> updatePassword(UpdatePasswordRequest request, String email) {
-
-		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-			throw new MemberException(INCORRECT_NOW_PASSWORD);
-		}
-
-		if (!Objects.equals(request.getNewPassword(), request.getPasswordCheck())) {
-			throw new MemberException(INCORRECT_PASSWORD_CHECK);
-		}
-
-		member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
-		return getMessage("비밀번호 변경이 완료되었습니다.");
-	}
-
-	@Override
-	@Transactional
-	public Map<String, String> updateNickname(UpdateNicknameRequest request, String email) {
-
-		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-		if (memberRepository.existsByNickname(request.getNickname())) {
-			throw new MemberException(DUPLICATED_NICKNAME);
-		}
-
-		member.updateNickname(request.getNickname());
-		return getMessage("닉네임 변경이 완료되었습니다.");
-	}
-
-	@Override
-	@Transactional
-	public Map<String, String> updateProfileImg(MultipartFile file, String email) {
-
-		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-		String newProfileImgUrl = awsS3Service.uploadFile(file, DIR);
-		awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
-
-		member.updateProfileImg(newProfileImgUrl);
-		return getMessage("프로필 이미지 변경이 완료되었습니다.");
-	}
-
-	@Override
-	@Transactional
-	public Map<String, String> withdraw(WithdrawRequest request, String email) {
-
-		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-		if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-			throw new MemberException(FAIL_TO_WITHDRAWAL);
-		}
-		awsS3Service.deleteFile(member.getProfileImgUrl(), DIR);
-		member.withdraw();
-
-		return getMessage("회원 탈퇴가 완료되었습니다.");
-	}
-
-	@Override
 	@Transactional(readOnly = true)
-	public MemberDetailResponse getMemberDetail(Member member) {
-		return memberRepository.findMemberDetailByMemberId(member.getId());
-	}
-
-	@Override
 	public ProfileResponse getMemberProfile(Member member) {
 		return ProfileResponse.fromEntity(member);
 	}
