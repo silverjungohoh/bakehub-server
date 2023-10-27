@@ -81,9 +81,14 @@ public interface MemberService {
 	Map<String, String> withdraw(WithdrawRequest request, String email);
 
 	/**
-	 * 회원 정보 조회
+	 * 다른 회원 정보 상세 조회
 	 */
-	MemberDetailResponse getMemberDetail(Member member);
+	MemberDetailResponse getMemberDetail(Long memberId);
+
+	/**
+	 * 회원 정보 상세 조회
+	 */
+	MemberDetailResponse getMyMemberDetail(Member member);
 
 	/**
 	 * 회원 프로필 조회

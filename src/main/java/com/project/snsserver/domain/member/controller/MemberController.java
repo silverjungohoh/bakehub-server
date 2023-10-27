@@ -189,11 +189,19 @@ public class MemberController {
 	/**
 	 * 회원 정보 조회
 	 */
-	@Operation(summary = "회원 상세 정보 조회")
+	@Operation(summary = "나의 회원 상세 정보 조회")
 	@GetMapping("/info")
-	public ResponseEntity<MemberDetailResponse> getMemberDetail(@AuthMember Member member) {
+	public ResponseEntity<MemberDetailResponse> getMyMemberDetail(@AuthMember Member member) {
 
-		MemberDetailResponse response = memberService.getMemberDetail(member);
+		MemberDetailResponse response = memberService.getMyMemberDetail(member);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "다른 회원 상세 정보 조회")
+	@GetMapping("/{memberId}/info")
+	public ResponseEntity<MemberDetailResponse> getMemberDetail(@PathVariable Long memberId) {
+
+		MemberDetailResponse response = memberService.getMemberDetail(memberId);
 		return ResponseEntity.ok(response);
 	}
 

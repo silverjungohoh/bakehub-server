@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import static com.project.snsserver.domain.board.model.entity.QPost.post;
 import static com.project.snsserver.domain.board.model.entity.QPostHeart.postHeart;
+import static com.project.snsserver.domain.member.model.entity.QFollow.*;
 import static com.project.snsserver.domain.member.model.entity.QMember.member;
 import static com.querydsl.core.types.ExpressionUtils.as;
 import static com.querydsl.core.types.Projections.*;
@@ -26,7 +27,6 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
 					member.email.as("email"),
 					member.nickname.as("nickname"),
 					member.gender.as("gender"),
-					member.role.as("role"),
 					member.profileImgUrl.as("profileImgUrl"),
 					member.createdAt.as("createdAt"),
 					as(select(post.id.count()).from(post)
@@ -34,7 +34,13 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
 						"totalPostCnt"),
 					as(select(postHeart.id.count()).from(postHeart)
 							.where(postHeart.member.id.eq(memberId)),
-						"totalPostHeartCnt")
+						"totalPostHeartCnt"),
+					as(select(follow.id.count()).from(follow)
+						.where(follow.follower.id.eq(memberId)),
+						"followingCnt"),
+					as(select(follow.id.count()).from(follow)
+						.where(follow.following.id.eq(memberId)),
+						"followerCnt")
 				)
 			)
 			.from(member)

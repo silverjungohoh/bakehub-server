@@ -1,11 +1,13 @@
 package com.project.snsserver.domain.member.model.dto.response;
 
-import com.project.snsserver.domain.member.type.Gender;
-import com.project.snsserver.domain.member.type.MemberRole;
-
-import lombok.*;
-
 import java.time.LocalDateTime;
+
+import com.project.snsserver.domain.member.type.Gender;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -21,8 +23,6 @@ public class MemberDetailResponse {
 
 	private Gender gender;
 
-	private MemberRole role;
-
 	private String profileImgUrl;
 
 	private LocalDateTime createdAt; // 가입일
@@ -30,4 +30,8 @@ public class MemberDetailResponse {
 	private Long totalPostCnt; // 작성한 게시물 개수
 
 	private Long totalPostHeartCnt; // 좋아요 누른 게시물 개수
+
+	private Long followingCnt;
+
+	private Long followerCnt;
 }

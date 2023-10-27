@@ -268,7 +268,17 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public MemberDetailResponse getMemberDetail(Member member) {
+	public MemberDetailResponse getMemberDetail(Long memberId) {
+
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+		return memberRepository.findMemberDetailByMemberId(member.getId());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public MemberDetailResponse getMyMemberDetail(Member member) {
 		return memberRepository.findMemberDetailByMemberId(member.getId());
 	}
 
