@@ -16,7 +16,7 @@ import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.notification.model.dto.NotificationResponse;
 import com.project.snsserver.domain.notification.service.NotificationService;
 import com.project.snsserver.domain.notification.sse.SseConnection;
-import com.project.snsserver.domain.notification.sse.SseConnectionPool;
+import com.project.snsserver.domain.notification.sse.repository.SseConnectionRepository;
 import com.project.snsserver.global.util.AuthMember;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "알림", description = "알림 API Document")
 public class NotificationController {
 
-	private final SseConnectionPool sseConnectionPool;
+	private final SseConnectionRepository sseConnectionRepository;
 	private final ObjectMapper objectMapper;
 	private final NotificationService notificationService;
 
@@ -40,9 +40,9 @@ public class NotificationController {
 	public ResponseBodyEmitter connect(@AuthMember Member member) {
 
 		var sseConnection
-			= SseConnection.connect(member.getNickname(), sseConnectionPool, objectMapper);
+			= SseConnection.connect(member.getNickname(), sseConnectionRepository, objectMapper);
 
-		sseConnectionPool.add(sseConnection.getUniqueKey(), sseConnection);
+		sseConnectionRepository.add(sseConnection.getUniqueKey(), sseConnection);
 		return sseConnection.getSseEmitter();
 	}
 

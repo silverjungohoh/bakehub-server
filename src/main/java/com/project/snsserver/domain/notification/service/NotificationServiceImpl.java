@@ -6,7 +6,7 @@ import com.project.snsserver.domain.notification.model.dto.NotificationMessage;
 import com.project.snsserver.domain.notification.model.dto.NotificationResponse;
 import com.project.snsserver.domain.notification.model.entity.Notification;
 import com.project.snsserver.domain.notification.repository.jpa.NotificationRepository;
-import com.project.snsserver.domain.notification.sse.SseConnectionPool;
+import com.project.snsserver.domain.notification.sse.repository.SseConnectionRepository;
 import com.project.snsserver.global.error.exception.MemberException;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import static com.project.snsserver.global.error.type.MemberErrorCode.MEMBER_NOT
 public class NotificationServiceImpl implements NotificationService {
 
 	private static final String NAME = "notification";
-	private final SseConnectionPool sseConnectionPool;
+	private final SseConnectionRepository sseConnectionRepository;
 	private final MemberRepository memberRepository;
 	private final NotificationRepository notificationRepository;
 
@@ -48,7 +48,7 @@ public class NotificationServiceImpl implements NotificationService {
 		notificationRepository.save(notification);
 
 		var sseConnection
-			= sseConnectionPool.get(nickname);
+			= sseConnectionRepository.get(nickname);
 
 		NotificationResponse response
 			= NotificationResponse.fromEntity(notification);

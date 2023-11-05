@@ -1,4 +1,4 @@
-package com.project.snsserver.domain.notification.rabbitmq;
+package com.project.snsserver.domain.notification.handler;
 
 import com.project.snsserver.domain.notification.model.dto.NotificationMessage;
 

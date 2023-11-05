@@ -15,7 +15,7 @@ import com.project.snsserver.domain.board.repository.jpa.PostHeartRepository;
 import com.project.snsserver.domain.board.repository.jpa.PostRepository;
 import com.project.snsserver.domain.member.model.entity.Member;
 import com.project.snsserver.domain.notification.model.dto.NotificationMessage;
-import com.project.snsserver.domain.notification.rabbitmq.NotificationProducer;
+import com.project.snsserver.domain.notification.handler.NotificationProducer;
 import com.project.snsserver.global.error.exception.BoardException;
 
 import lombok.RequiredArgsConstructor;
