@@ -43,9 +43,9 @@ public interface PostService {
 	Map<String, String> deletePostImage(Long postId, Long postImageId);
 
 	/**
-	 * 게시물 목록 조회
+	 * 게시물 목록 조회 with 검색
 	 */
-	Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable);
+	Slice<PostResponse> getPosts(Long lastPostId, String keyword, Pageable pageable);
 
 	/**
 	 * 게시물 상세 조회

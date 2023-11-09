@@ -8,7 +8,7 @@ import org.springframework.data.domain.Slice;
 
 public interface CustomPostRepository {
 
-	Slice<PostResponse> findAllPost(Long lastPostId, Pageable pageable);
+	Slice<PostResponse> findAllPost(Long lastPostId, String keyword, Pageable pageable);
 
 	PostDetailResponse findPostByPostId(Long postId, Long memberId);
 

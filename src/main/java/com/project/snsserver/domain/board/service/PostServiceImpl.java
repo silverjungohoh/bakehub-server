@@ -157,8 +157,8 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Slice<PostResponse> getPosts(Long lastPostId, Pageable pageable) {
-		return postRepository.findAllPost(lastPostId, pageable);
+	public Slice<PostResponse> getPosts(Long lastPostId, String keyword, Pageable pageable) {
+		return postRepository.findAllPost(lastPostId, keyword, pageable);
 	}
 
 	@Override

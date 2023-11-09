@@ -105,14 +105,15 @@ public class PostController {
 	}
 
 	/**
-	 * 글 목록 조회
+	 * 글 목록 조회 with 검색
 	 */
 	@Operation(summary = "글 목록 조회")
 	@GetMapping
 	public ResponseEntity<Slice<PostResponse>> getPosts(@PageableDefault Pageable pageable,
+		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) Long lastPostId) {
 
-		Slice<PostResponse> response = postService.getPosts(lastPostId, pageable);
+		Slice<PostResponse> response = postService.getPosts(lastPostId, keyword, pageable);
 		return ResponseEntity.ok(response);
 	}
 
