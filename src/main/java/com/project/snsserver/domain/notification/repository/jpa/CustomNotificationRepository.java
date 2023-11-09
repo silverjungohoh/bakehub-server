@@ -9,6 +9,4 @@ public interface CustomNotificationRepository {
 
 	Slice<NotificationResponse> findAllNotificationByMemberId(Long memberId, Long lastNotificationId,
 		Pageable pageable);
-
-	Long deleteAllNotificationByMemberId(Long memberId);
 }

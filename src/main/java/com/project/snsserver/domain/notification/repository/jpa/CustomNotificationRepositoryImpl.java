@@ -1,21 +1,20 @@
 package com.project.snsserver.domain.notification.repository.jpa;
 
-import com.project.snsserver.domain.notification.model.dto.NotificationResponse;
-import com.project.snsserver.domain.notification.model.entity.Notification;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import static com.project.snsserver.domain.member.model.entity.QMember.*;
+import static com.project.snsserver.domain.notification.model.entity.QNotification.*;
+import static com.querydsl.core.types.Projections.*;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.project.snsserver.domain.notification.model.dto.NotificationResponse;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import static com.project.snsserver.domain.member.model.entity.QMember.member;
-import static com.project.snsserver.domain.notification.model.entity.QNotification.notification;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CustomNotificationRepositoryImpl implements CustomNotificationRepository {
@@ -29,8 +28,17 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 	public Slice<NotificationResponse> findAllNotificationByMemberId(Long memberId, Long lastNotificationId,
 		Pageable pageable) {
 
-		List<Notification> notifications = queryFactory.selectFrom(notification)
-			.leftJoin(notification.member, member).fetchJoin()
+		List<NotificationResponse> notifications = queryFactory.select(
+				fields(NotificationResponse.class,
+					notification.id.as("notificationId"),
+					notification.type,
+					notification.content,
+					notification.relatedUrl,
+					notification.createdAt
+				)
+			)
+			.from(notification)
+			.innerJoin(notification.member, member)
 			.where(
 				lastNotificationId(lastNotificationId),
 				notification.member.id.eq(memberId)
@@ -42,13 +50,6 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 		return checkLastPage(pageable, notifications);
 	}
 
-	@Override
-	public Long deleteAllNotificationByMemberId(Long memberId) {
-		return queryFactory.delete(notification)
-			.where(notification.member.id.eq(memberId))
-			.execute();
-	}
-
 	private BooleanExpression lastNotificationId(Long lastNotificationId) {
 		if (lastNotificationId == null) {
 			return null;
@@ -56,7 +57,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 		return notification.id.lt(lastNotificationId);
 	}
 
-	private Slice<NotificationResponse> checkLastPage(Pageable pageable, List<Notification> notifications) {
+	private Slice<NotificationResponse> checkLastPage(Pageable pageable, List<NotificationResponse> notifications) {
 
 		boolean hasNext = false;
 
@@ -64,12 +65,6 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 			hasNext = true;
 			notifications.remove(pageable.getPageSize());
 		}
-
-		List<NotificationResponse> notificationByMember
-			= notifications.stream()
-			.map(NotificationResponse::fromEntity)
-			.collect(Collectors.toList());
-
-		return new SliceImpl<>(notificationByMember, pageable, hasNext);
+		return new SliceImpl<>(notifications, pageable, hasNext);
 	}
 }
