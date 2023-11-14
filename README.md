@@ -18,7 +18,7 @@
 <br>
 
 ## 💾 ERD
-![erd image](https://i.ibb.co/ZJHMc32/erd.png)
+![erd image](https://github.com/silverjungohoh/bakehub-server/assets/132037237/3aadd2fb-16e9-417b-95c5-d500a9edec01)
 
 ## 👍 주요 기능
 <details>
